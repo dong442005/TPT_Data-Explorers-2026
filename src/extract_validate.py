@@ -15,28 +15,6 @@ OUTPUT_JSON = Path("data/processed/processed_data.json")
 TEMP_DIR.mkdir(exist_ok=True)
 
 
-def decode_pdf_font_error(text):
-    if not text:
-        return text
-    replacements = {
-        "nnp": "đạp",
-        "Thnng": "Thống",
-        "Nhnt": "Nhất",
-        "ngnc": "ngọc",
-        "nen": "đen",
-        "Chinc": "Chiếc",
-        "XCanhhinc": "Chiếc",
-        "KyoClhicinc": "Chiếc",
-        "Kyolic": "Acrylic",
-        "dCnhninngc": "Chiếc",
-        "VinCthinc": "Chiếc",
-        "nn": "đỏ",
-        "unite": "Unite"
-    }
-    for mangled, clean in replacements.items():
-        text = text.replace(mangled, clean)
-    return text
-
 
 
 def decode_mime_text(value):
@@ -289,8 +267,8 @@ def parse_pdf(pdf_path):
 
                         lines.append({
                             "product_code": product_code,
-                            "product_name": decode_pdf_font_error(str(row[2]).strip()) if row[2] else None,
-                            "unit": decode_pdf_font_error(str(row[3]).strip()) if row[3] else None,
+                            "product_name": str(row[2]).strip() if row[2] else None,
+                            "unit": str(row[3]).strip() if row[3] else None,
                             "quantity": str(quantity),
                             "unit_price": str(unit_price),
                             "line_total": str(line_total),
