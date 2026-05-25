@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.venv
+venv/
+ENV/
+env/
+.env
+
+# Database config containing credentials
+config/db_config.json
+
+# Data files (keep raw/processed folder structure but ignore contents)
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+
+# Model weights
+models/*
+!models/.gitkeep
+
+# BI Local templates
+bi/*.pbix.user
+
+# IDEs & System files
+.vscode/
+.idea/
+.gemini/
