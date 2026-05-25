@@ -7,7 +7,7 @@ from email.utils import parsedate_to_datetime
 DB_CONFIG = {
     "dbname": "tnbike_db",
     "user": "postgres",
-    "password": "Gamegunny321",
+    "password": "YOUR_POSTGRES_PASSWORD",  # Thay mật khẩu máy cá nhân của bạn vào đây
     "host": "localhost",
     "port": "5432",
 }
