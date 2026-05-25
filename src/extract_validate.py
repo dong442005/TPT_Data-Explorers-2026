@@ -8,9 +8,9 @@ from email import policy
 from email.header import decode_header, make_header
 from pathlib import Path
 
-FOLDER_PATH = Path("folder_code/data_email")
+FOLDER_PATH = Path("data/raw/emails")
 TEMP_DIR = Path("./temp_pdf")
-OUTPUT_JSON = Path("processed_data.json")
+OUTPUT_JSON = Path("data/processed/processed_data.json")
 
 TEMP_DIR.mkdir(exist_ok=True)
 

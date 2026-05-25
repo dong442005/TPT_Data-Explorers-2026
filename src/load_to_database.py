@@ -12,7 +12,7 @@ DB_CONFIG = {
     "port": "5432",
 }
 
-INPUT_JSON = "processed_data.json"
+INPUT_JSON = "data/processed/processed_data.json"
 
 
 def normalize_so_number(value):
