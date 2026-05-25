@@ -63,35 +63,82 @@ WHERE product_code IN (
     '000216002022009', 'TP0016.05.24.01'
 );
 
--- BƯỚC 4: SỬA LỖI MÀU SẮC CHO DÂN THƯỜNG (HP, BLACKPINK, BATMAN, ADJECTIVES)
+-- BƯỚC 4: SỬA LỖI MÀU SẮC CHO CÁC SKU BỊ LỖI (MÃ XE, TÊN NHÂN VẬT, MÔ TẢ CHẤT LIỆU, MÀU TEM)
 UPDATE tnbike.product
-SET color = CASE
-    -- Trích xuất màu đúng từ tên sản phẩm đối với các dòng lỗi HP
-    WHEN product_name ILIKE '%đen%' THEN 'Đen'
-    WHEN product_name ILIKE '%trắng%' THEN 'Trắng'
-    WHEN product_name ILIKE '%xanh da trời%' THEN 'Xanh Dương'
-    WHEN product_name ILIKE '%xanh%' THEN 'Xanh'
-    WHEN product_name ILIKE '%đỏ%' THEN 'Đỏ'
-    WHEN product_name ILIKE '%ghi%' THEN 'Ghi'
-    WHEN product_name ILIKE '%café/nâu%' THEN 'Café/Nâu'
-    WHEN product_name ILIKE '%cà phê%' THEN 'Café/Nâu'
-    WHEN product_name ILIKE '%hồng%' THEN 'Hồng'
-    WHEN product_name ILIKE '%tím%' THEN 'Tím'
-    WHEN product_name ILIKE '%vàng cánh gián%' THEN 'Nâu'
-    WHEN product_name ILIKE '%vàng%' THEN 'Vàng'
-    -- Đổi Blackpink sang Đen/Hồng cho chuẩn ý nghĩa màu sắc
-    WHEN color = 'Blackpink' THEN 'Đen/Hồng'
-    -- Các mã model xe không thể trích xuất màu sắc từ tên
-    WHEN color IN ('05-26', '219-05-26', '05-27', '16-04') THEN 'Chưa xác định'
+SET color = CASE product_code
+    -- 1. Mã model xe (không có màu trong tên)
+    WHEN '000214004000000' THEN 'Chưa xác định' -- GN 05-26
+    WHEN '000207004000000' THEN 'Chưa xác định' -- 219-05-26
+    WHEN '000215004000000' THEN 'Chưa xác định' -- GN 05-27
+    WHEN '000114002000000' THEN 'Chưa xác định' -- TE 16-04
+
+    -- 2. Tên nhân vật / BLACKPINK
+    WHEN '000132002001001' THEN 'Đen'         -- GN 2.0 20 đen - Bat man
+    WHEN '000218004009001' THEN 'Đen/Hồng'    -- GN 06-27 2.0 Pro BLACKPINK
+    WHEN '000132002022001' THEN 'Xanh'        -- GN 2.0 20 xanh - Superman
+    WHEN '000132002003001' THEN 'Đỏ'          -- GN 2.0 20 đỏ - Wonderwoman
+
+    -- 3. Thương hiệu HP
+    WHEN '000225002002001' THEN 'Trắng'       -- New 26 Trắng DA HP
+    WHEN '000225002007001' THEN 'Xanh'        -- New 26 Xanh DA HP
+    WHEN '000225002004001' THEN 'Đỏ'          -- New 26 màu đỏ DA HP
+    WHEN '000225002015001' THEN 'Café/Nâu'    -- New 26 Café/nâu DA HP
+    WHEN '000333002001003' THEN 'Đen'         -- Super 26 S đen DA HP
+    WHEN '000333002022003' THEN 'Xanh'        -- Super 26 S xanh DA HP
+    WHEN '000333002008003' THEN 'Ghi'         -- Super 26 S ghi DA HP
+
+    -- 4. Tính từ đơn độc / Trạng thái màu sắc
+    WHEN '000413002001000' THEN 'Đen'         -- Highway 27.5 Đen bóng
+    WHEN '000324000180000' THEN 'Đen'         -- MTB 26-05_2023 Đen mờ
+    WHEN '000413002018000' THEN 'Đen'         -- Highway 27.5 Đen mờ
+    WHEN '000122002009001' THEN 'Hồng'        -- Bubbles 20 Hồng dạ quang
+    WHEN '000122002024000' THEN 'Tím'         -- Bubbles 20 Tím dạ quang
+    WHEN '000406002004000' THEN 'Đỏ'          -- nam 0209 đỏ đậm
+    WHEN '000407002019000' THEN 'Nâu'         -- nữ 0209 Base vàng cánh gián
+    -- Các trường hợp 'trời' -> Xanh Dương
+    WHEN '000314002020000' THEN 'Xanh Dương'   -- MTB 24-04 Tem Xanh da trời
+    WHEN '1000300050200000' THEN 'Xanh Dương'  -- MTB SPD 27.5 (xanh da trời)
+    WHEN '1000310050200000' THEN 'Xanh Dương'  -- Road RPD 700C Xanh da trời
+    WHEN '000304002020000' THEN 'Xanh Dương'   -- MTB 20-04 Tem Xanh da trời
+    WHEN '1000320050200000' THEN 'Xanh Dương'  -- Road RPD 700C V5 Xanh da trời
+    WHEN '000104002020000' THEN 'Xanh Dương'   -- Tom & Jerry 14 Xanh da trời
+    WHEN '000303002020000' THEN 'Xanh Dương'   -- MTB 20-03 Tem Xanh da trời
+
+    -- 5. Lỗi màu tem lấn át hoặc chứa chữ Tem
+    WHEN '000231003005001' THEN 'Đen'         -- M2601 Shimano Đen (tem cam)
+    WHEN '000231003002001' THEN 'Trắng'       -- M2601 Shimano Trắng (tem tím)
+    WHEN '000231003022001' THEN 'Xanh'        -- M2601 Shimano Xanh (tem trắng)
+    WHEN '000231003023001' THEN 'Đen'         -- M2601 Shimano Đen (tem xanh)
+    WHEN '000231003023000' THEN 'Đen'         -- M2601 Đen Tem Xanh
+    WHEN '000231003005000' THEN 'Đen'         -- M2601 Đen Tem cam
+    -- Các trường hợp khác chỉ có 'Tem cam', 'Tem đỏ' thì chuẩn hóa thành màu chính
+    WHEN '000314002005000' THEN 'Cam'         -- MTB 24-04 Tem cam
+    WHEN '000304002004000' THEN 'Đỏ'          -- MTB 20-04 Tem đỏ
+    WHEN '000329002005000' THEN 'Cam'         -- MTB 26-07 Tem cam
+    WHEN '000329002004001' THEN 'Đỏ'          -- MTB 26-07 Tem đỏ
+    WHEN '000303002005000' THEN 'Cam'         -- MTB 20-03 Tem cam
+    WHEN '000303002004000' THEN 'Đỏ'          -- MTB 20-03 Tem đỏ
+    WHEN '000304002005000' THEN 'Cam'         -- MTB 20-04 Tem cam
     ELSE color
 END
-WHERE color IN ('05-26', '219-05-26', '05-27', '16-04', 'Bat Man', 'Blackpink', 'Hp', 'Superman', 'Wonderwoman', 'Bóng', 'Đậm', 'Gián', 'Mờ', 'Quang', 'Trời');
+WHERE product_code IN (
+    '000214004000000', '000207004000000', '000215004000000', '000114002000000',
+    '000132002001001', '000218004009001', '000132002022001', '000132002003001',
+    '000225002002001', '000225002007001', '000225002004001', '000225002015001',
+    '000333002001003', '000333002022003', '000333002008003', '000413002001000',
+    '000324000180000', '000413002018000', '000122002009001', '000122002024000',
+    '000406002004000', '000407002019000', '000314002020000', '1000300050200000',
+    '1000310050200000', '000304002020000', '1000320050200000', '000104002020000',
+    '000303002020000', '000231003005001', '000231003002001', '000231003022001',
+    '000231003023001', '000231003023000', '000231003005000', '000314002005000',
+    '000304002004000', '000329002005000', '000329002004001', '000303002005000',
+    '000303002004000', '000304002005000'
+);
 
 -- BƯỚC 5: ĐỒNG BỘ TOÀN BỘ DỮ LIỆU ĐÃ LÀM SẠCH SANG BẢNG FACT_SALES
 UPDATE tnbike.fact_sales AS fs
 SET product_name = p.product_name,
-    color = p.color,
-    unit = p.unit
+    color = p.color
 FROM tnbike.product AS p
 WHERE fs.product_code = p.product_code;
 
