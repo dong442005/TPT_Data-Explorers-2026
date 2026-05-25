@@ -7,7 +7,7 @@ from email.utils import parsedate_to_datetime
 DB_CONFIG = {
     "dbname": "tnbike_db",
     "user": "postgres",
-    "password": "YOUR_POSTGRES_PASSWORD",  # Thay mật khẩu máy cá nhân của bạn vào đây
+    "password": "442005",  # Thay mật khẩu máy cá nhân của bạn vào đây
     "host": "localhost",
     "port": "5432",
 }
@@ -73,6 +73,32 @@ def create_email_log_table(cur):
             processing_status VARCHAR(50)
         );
     """)
+
+
+def ensure_base_color_columns(cur):
+    # Kiểm tra và thêm base_color vào bảng product
+    cur.execute("""
+        SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_schema='tnbike' AND table_name='product' AND column_name='base_color'
+        );
+    """)
+    if not cur.fetchone()[0]:
+        print("Cột base_color chưa tồn tại trong bảng product, đang tạo...")
+        cur.execute("ALTER TABLE tnbike.product ADD COLUMN base_color VARCHAR(60);")
+
+    # Kiểm tra và thêm base_color vào bảng fact_sales
+    cur.execute("""
+        SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_schema='tnbike' AND table_name='fact_sales' AND column_name='base_color'
+        );
+    """)
+    if not cur.fetchone()[0]:
+        print("Cột base_color chưa tồn tại trong bảng fact_sales, đang tạo...")
+        cur.execute("ALTER TABLE tnbike.fact_sales ADD COLUMN base_color VARCHAR(60);")
 
 
 def get_or_create_customer(cur, tax_code, customer_name, address):
@@ -146,7 +172,7 @@ def refresh_fact_sales(cur):
             order_date, fiscal_year, fiscal_quarter, fiscal_month, week_of_year,
             so_number, order_id, line_id,
             customer_code, customer_name, province_id, province_name, region,
-            product_code, product_name, color, line_id_fk, line_name, group_code, group_name,
+            product_code, product_name, color, base_color, line_id_fk, line_name, group_code, group_name,
             quantity, unit_price, line_total
         )
         SELECT
@@ -166,6 +192,7 @@ def refresh_fact_sales(cur):
             p.product_code,
             p.product_name,
             p.color,
+            p.base_color,
             p.line_id AS line_id_fk,
             pl.line_name,
             pg.group_code,
@@ -199,6 +226,7 @@ def main():
 
     try:
         cur.execute("SET search_path TO tnbike, public;")
+        ensure_base_color_columns(cur)
         create_email_log_table(cur)
 
         print("Đang xóa dữ liệu tháng 3 cũ nếu có...")

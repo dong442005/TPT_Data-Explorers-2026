@@ -15,6 +15,10 @@ SET search_path TO tnbike, public;
 
 BEGIN;
 
+-- BƯỚC 1b: THÊM CỘT MÀU CƠ BẢN (BASE_COLOR) NẾU CHƯA CÓ
+ALTER TABLE tnbike.product ADD COLUMN IF NOT EXISTS base_color VARCHAR(60);
+ALTER TABLE tnbike.fact_sales ADD COLUMN IF NOT EXISTS base_color VARCHAR(60);
+
 -- BƯỚC 2: CHUẨN HÓA VIẾT HOA CHỮ ĐẦU CHO TOÀN BỘ MÀU SẮC ĐANG CÓ
 UPDATE tnbike.product
 SET color = INITCAP(LOWER(color))
@@ -135,10 +139,33 @@ WHERE product_code IN (
     '000303002004000', '000304002005000'
 );
 
+-- BƯỚC 4b: ĐIỀN CỘT MÀU CƠ BẢN (BASE_COLOR) DỰA TRÊN MÀU CHI TIẾT (COLOR)
+UPDATE tnbike.product
+SET base_color = CASE
+    WHEN color IN ('Đen') THEN 'Đen'
+    WHEN color IN ('Đen/Hồng') THEN 'Đen/Hồng'
+    WHEN color IN ('Đỏ', 'Đỏ Đun', 'Đỏ Tươi') THEN 'Đỏ'
+    WHEN color IN ('Xanh Dương', 'Coban', 'Xanh Santorini', 'Xanh Nước Biển', 'Pastel Xanh') THEN 'Xanh Dương'
+    WHEN color IN ('Xanh Lá', 'Rêu') THEN 'Xanh Lá'
+    WHEN color IN ('Xanh Ngọc', 'Ngọc', 'Xanh Mint', 'Mint') THEN 'Xanh Ngọc/Mint'
+    WHEN color IN ('Xanh', 'Xanh Tím') THEN 'Xanh'
+    WHEN color IN ('Ghi') THEN 'Ghi'
+    WHEN color IN ('Hồng') THEN 'Hồng'
+    WHEN color IN ('Vàng', 'Chanh') THEN 'Vàng'
+    WHEN color IN ('Cam') THEN 'Cam'
+    WHEN color IN ('Trắng') THEN 'Trắng'
+    WHEN color IN ('Nâu', 'Café/Nâu') THEN 'Nâu'
+    WHEN color IN ('Kem') THEN 'Kem'
+    WHEN color IN ('Be') THEN 'Be'
+    WHEN color = 'Chưa xác định' THEN 'Chưa xác định'
+    ELSE color
+END;
+
 -- BƯỚC 5: ĐỒNG BỘ TOÀN BỘ DỮ LIỆU ĐÃ LÀM SẠCH SANG BẢNG FACT_SALES
 UPDATE tnbike.fact_sales AS fs
 SET product_name = p.product_name,
-    color = p.color
+    color = p.color,
+    base_color = p.base_color
 FROM tnbike.product AS p
 WHERE fs.product_code = p.product_code;
 
