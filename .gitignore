@@ -28,3 +28,8 @@ bi/*.pbix.user
 .vscode/
 .idea/
 .gemini/
+
+# CSV and temp files
+*.csv
+temp_pdf/
+

@@ -12,7 +12,44 @@ DB_CONFIG = {
     "port": "5432",
 }
 
-INPUT_JSON = "data/processed/processed_data.json"
+INPUT_JSON = "data/processed/processed_data_clean.json"
+
+
+def get_base_color(color):
+    if not color or color == 'Chưa xác định':
+        return 'Chưa xác định'
+    c = str(color).strip()
+    if c == 'Đen':
+        return 'Đen'
+    if c == 'Đen/Hồng':
+        return 'Đen/Hồng'
+    if c in ('Đỏ', 'Đỏ Đun', 'Đỏ Tươi'):
+        return 'Đỏ'
+    if c in ('Xanh Dương', 'Coban', 'Xanh Santorini', 'Xanh Nước Biển', 'Pastel Xanh'):
+        return 'Xanh Dương'
+    if c in ('Xanh Lá', 'Rêu'):
+        return 'Xanh Lá'
+    if c in ('Xanh Ngọc', 'Ngọc', 'Xanh Mint', 'Mint'):
+        return 'Xanh Ngọc/Mint'
+    if c in ('Xanh', 'Xanh Tím'):
+        return 'Xanh'
+    if c == 'Ghi':
+        return 'Ghi'
+    if c == 'Hồng':
+        return 'Hồng'
+    if c in ('Vàng', 'Chanh'):
+        return 'Vàng'
+    if c == 'Cam':
+        return 'Cam'
+    if c == 'Trắng':
+        return 'Trắng'
+    if c in ('Nâu', 'Café/Nâu'):
+        return 'Nâu'
+    if c == 'Kem':
+        return 'Kem'
+    if c == 'Be':
+        return 'Be'
+    return c
 
 
 def normalize_so_number(value):
@@ -149,15 +186,21 @@ def ensure_product(cur, line):
     if cur.fetchone():
         return
 
+    color_clean = line.get("color_clean")
+    base_color = get_base_color(color_clean)
+
     cur.execute("""
         INSERT INTO tnbike.product (
-            product_code, product_name, unit
+            product_code, product_name, unit, color, base_color, line_id
         )
-        VALUES (%s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s);
     """, (
         product_code,
-        line.get("product_name") or product_code,
-        line.get("unit") or "Chiếc"
+        line.get("product_name_clean") or product_code,
+        line.get("unit_clean") or "Chiếc",
+        color_clean,
+        base_color,
+        line.get("line_id_clean")
     ))
 
 
