@@ -242,18 +242,16 @@ FROM rfm_scored;
 CREATE OR REPLACE VIEW tnbike.v_bcg_matrix AS
 WITH revenue_by_line AS (
     SELECT
-        line_name,
-        group_code,
-        group_name,
-        -- Chỉ lấy dòng xe đã phân loại (line_name IS NOT NULL).
-        -- 55 SKU chưa phân loại (14.12 tỷ, 12.9%) bị loại — xem cột revenue_share_pct để rõ scope.
+        COALESCE(line_name, 'Chưa phân loại') AS line_name,
+        COALESCE(group_code, 'UNKNOWN') AS group_code,
+        COALESCE(group_name, 'Chưa phân loại') AS group_name,
+        -- Đã bao gồm toàn bộ 100% doanh thu, kể cả 55 SKU chưa phân loại (14.12 tỷ)
         SUM(CASE WHEN fiscal_year=2026 AND fiscal_month BETWEEN 1 AND 3 THEN line_total ELSE 0 END) AS rev_q1_2026,
         SUM(CASE WHEN fiscal_year=2025 AND fiscal_month BETWEEN 1 AND 3 THEN line_total ELSE 0 END) AS rev_q1_2025,
         SUM(line_total) AS total_revenue,
         SUM(quantity)   AS total_qty
     FROM tnbike.fact_sales
-    WHERE line_name IS NOT NULL
-    GROUP BY line_name, group_code, group_name
+    GROUP BY COALESCE(line_name, 'Chưa phân loại'), COALESCE(group_code, 'UNKNOWN'), COALESCE(group_name, 'Chưa phân loại')
 ),
 with_growth AS (
     SELECT *,
@@ -267,7 +265,7 @@ with_median AS (
         -- [FIX 2] Dùng MEDIAN thay vì AVG làm ngưỡng "thị phần cao/thấp".
         -- Lý do: Doanh thu product line lệch phải (Xe New 26 = 15.22 tỷ kéo AVG lên cao).
         -- Median robust với outlier — cùng lý luận đã áp dụng cho RFM Monetary scoring.
-        PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total_revenue) OVER () AS median_revenue,
+        (SELECT PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total_revenue) FROM with_growth) AS median_revenue,
         SUM(total_revenue) OVER () AS total_classified_revenue
     FROM with_growth
 )
@@ -314,14 +312,14 @@ ORDER BY total_revenue DESC;
 >
 > | # | Thay đổi | Lý do |
 > |---|---|---|
-> | **Fix 1** | Thêm cột `revenue_share_pct` | BCG chỉ cover ~87.1% doanh thu (55 SKU chưa phân loại bị loại). Người xem dashboard phải thấy scope này rõ ràng — không để mislead. |
+> | **Fix 1** | Thêm cột `revenue_share_pct` | BCG nay cover **100% doanh thu** (bao gồm cả 55 SKU Chưa phân loại được gộp thành 1 bubble lớn). Người xem có thể thấy độ lớn của nhóm này so với các dòng xe khác. |
 > | **Fix 2** | `AVG` → `PERCENTILE_CONT(0.5)` (Median) | Xe New 26 (15.22 tỷ) là outlier lớn. Nếu dùng AVG, ngưỡng bị kéo lên làm nhiều dòng xe "trung bình thực sự" bị gán "thị phần thấp". Median robust với phân bố lệch — cùng logic đã áp dụng cho RFM Monetary. |
 > | **Fix 3** | Thêm `'New Launch'` category | Dòng xe chỉ có data 2026 (không có Q1/2025) bị `growth_pct_yoy = NULL → COALESCE = 0` → gán nhầm "Dogs". Xe mới ra mắt phải được tách riêng, không đánh giá sớm. |
 >
 > **Những gì không thể thay đổi với data hiện tại:**
 > - Vẫn so sánh Q1/2025 vs Q1/2026 — đây là cặp dữ liệu đầy đủ **duy nhất** (không có T4-T12/2025).
 > - Vẫn dùng "Internal BCG" (so sánh nội bộ) — không có dữ liệu thị trường ngành xe đạp Việt Nam.
-> - **Bắt buộc ghi annotation trong Power BI:** `"BCG Matrix dùng doanh thu nội bộ làm proxy thị phần. Chỉ bao gồm 210/265 SKU đã phân loại (~87.1% doanh thu). Tăng trưởng tính theo Q1/2025 vs Q1/2026."`
+> - **Bắt buộc ghi annotation trong Power BI:** `"BCG Matrix nay cover 100% doanh thu, bao gồm 1 bong bóng riêng đại diện cho nhóm 55 SKU 'Chưa phân loại' (12.9%). Tăng trưởng tính theo Q1/2025 vs Q1/2026."`
 
 ### 5.3 Pipeline Status View (cho Trang 6)
 ```sql
@@ -494,7 +492,7 @@ CALCULATE([Total Revenue],
    5 màu: Stars / Cash Cows / Question Marks / Dogs / New Launch (xe mới 2026)
    Stars: Xe New 26/24 (revenue trên median + growth dương)
    Cash Cows: dòng xe revenue cao nhưng tăng trưởng ≤0
-   Annotation: "BCG cover 210/265 SKU (~87.1% DT). 55 SKU chưa phân loại không xuất hiện."
+   Annotation: "BCG cover 100% doanh thu. Nhóm 55 SKU Chưa phân loại được gộp thành 1 bubble."
 
 [Matrix Heatmap: Line × Color → Quantity]
    Không cần dùng Power Query fix màu, DB đã chuẩn.
