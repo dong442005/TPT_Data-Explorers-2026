@@ -7,12 +7,49 @@ from email.utils import parsedate_to_datetime
 DB_CONFIG = {
     "dbname": "tnbike_db",
     "user": "postgres",
-    "password": "YOUR_POSTGRES_PASSWORD",  # Thay mật khẩu máy cá nhân của bạn vào đây
+    "password": "442005",  # Thay mật khẩu máy cá nhân của bạn vào đây
     "host": "localhost",
     "port": "5432",
 }
 
-INPUT_JSON = "data/processed/processed_data.json"
+INPUT_JSON = "data/processed/processed_data_clean.json"
+
+
+def get_base_color(color):
+    if not color or color == 'Chưa xác định':
+        return 'Chưa xác định'
+    c = str(color).strip()
+    if c == 'Đen':
+        return 'Đen'
+    if c == 'Đen/Hồng':
+        return 'Đen/Hồng'
+    if c in ('Đỏ', 'Đỏ Đun', 'Đỏ Tươi'):
+        return 'Đỏ'
+    if c in ('Xanh Dương', 'Coban', 'Xanh Santorini', 'Xanh Nước Biển', 'Pastel Xanh'):
+        return 'Xanh Dương'
+    if c in ('Xanh Lá', 'Rêu'):
+        return 'Xanh Lá'
+    if c in ('Xanh Ngọc', 'Ngọc', 'Xanh Mint', 'Mint'):
+        return 'Xanh Ngọc/Mint'
+    if c in ('Xanh', 'Xanh Tím'):
+        return 'Xanh'
+    if c == 'Ghi':
+        return 'Ghi'
+    if c == 'Hồng':
+        return 'Hồng'
+    if c in ('Vàng', 'Chanh'):
+        return 'Vàng'
+    if c == 'Cam':
+        return 'Cam'
+    if c == 'Trắng':
+        return 'Trắng'
+    if c in ('Nâu', 'Café/Nâu'):
+        return 'Nâu'
+    if c == 'Kem':
+        return 'Kem'
+    if c == 'Be':
+        return 'Be'
+    return c
 
 
 def normalize_so_number(value):
@@ -75,6 +112,32 @@ def create_email_log_table(cur):
     """)
 
 
+def ensure_base_color_columns(cur):
+    # Kiểm tra và thêm base_color vào bảng product
+    cur.execute("""
+        SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_schema='tnbike' AND table_name='product' AND column_name='base_color'
+        );
+    """)
+    if not cur.fetchone()[0]:
+        print("Cột base_color chưa tồn tại trong bảng product, đang tạo...")
+        cur.execute("ALTER TABLE tnbike.product ADD COLUMN base_color VARCHAR(60);")
+
+    # Kiểm tra và thêm base_color vào bảng fact_sales
+    cur.execute("""
+        SELECT EXISTS (
+            SELECT 1 
+            FROM information_schema.columns 
+            WHERE table_schema='tnbike' AND table_name='fact_sales' AND column_name='base_color'
+        );
+    """)
+    if not cur.fetchone()[0]:
+        print("Cột base_color chưa tồn tại trong bảng fact_sales, đang tạo...")
+        cur.execute("ALTER TABLE tnbike.fact_sales ADD COLUMN base_color VARCHAR(60);")
+
+
 def get_or_create_customer(cur, tax_code, customer_name, address):
     tax_code = str(tax_code or "").strip()
 
@@ -123,15 +186,21 @@ def ensure_product(cur, line):
     if cur.fetchone():
         return
 
+    color_clean = line.get("color_clean")
+    base_color = get_base_color(color_clean)
+
     cur.execute("""
         INSERT INTO tnbike.product (
-            product_code, product_name, unit
+            product_code, product_name, unit, color, base_color, line_id
         )
-        VALUES (%s, %s, %s);
+        VALUES (%s, %s, %s, %s, %s, %s);
     """, (
         product_code,
-        line.get("product_name") or product_code,
-        line.get("unit") or "Chiếc"
+        line.get("product_name_clean") or product_code,
+        line.get("unit_clean") or "Chiếc",
+        color_clean,
+        base_color,
+        line.get("line_id_clean")
     ))
 
 
@@ -146,7 +215,7 @@ def refresh_fact_sales(cur):
             order_date, fiscal_year, fiscal_quarter, fiscal_month, week_of_year,
             so_number, order_id, line_id,
             customer_code, customer_name, province_id, province_name, region,
-            product_code, product_name, color, line_id_fk, line_name, group_code, group_name,
+            product_code, product_name, color, base_color, line_id_fk, line_name, group_code, group_name,
             quantity, unit_price, line_total
         )
         SELECT
@@ -166,6 +235,7 @@ def refresh_fact_sales(cur):
             p.product_code,
             p.product_name,
             p.color,
+            p.base_color,
             p.line_id AS line_id_fk,
             pl.line_name,
             pg.group_code,
@@ -199,6 +269,7 @@ def main():
 
     try:
         cur.execute("SET search_path TO tnbike, public;")
+        ensure_base_color_columns(cur)
         create_email_log_table(cur)
 
         print("Đang xóa dữ liệu tháng 3 cũ nếu có...")
