@@ -169,6 +169,106 @@ SET product_name = p.product_name,
 FROM tnbike.product AS p
 WHERE fs.product_code = p.product_code;
 
+-- ÉP DỮ LIỆU CỘT UNIT LÀ CHIẾC
+UPDATE tnbike.product
+SET unit = 'Chiếc';
+
+-- MAP LINE_ID CHO CÁC SẢN PHẨM ĐANG BỊ NULL
+UPDATE tnbike.product
+SET line_id = CASE
+    -- 1. GN Pro Shimano
+    WHEN product_name ILIKE '%GN 06-27 2.0 Pro Shimano%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe GN 06-27 2.0 Pro Shimano' LIMIT 1)
+    
+    -- 2. Super 26 (Cẩn thận loại trừ bản "S")
+    WHEN product_name ILIKE '%Super 26%' AND product_name NOT ILIKE '%Super 26 S%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe Super 26' LIMIT 1)
+    
+    -- 3. Super 24 (Không map SK 24)
+    WHEN product_name ILIKE '%Super 24%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe Super 24' LIMIT 1)
+    
+    -- 4. Super 20 (Không map SK 20)
+    WHEN product_name ILIKE '%Super 20%' AND product_name NOT ILIKE '%Man%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe TE Super 20' LIMIT 1)
+    
+    -- 5. Batman16 (Bỏ Batwheels 16)
+    WHEN product_name ILIKE '%Batman16%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe TE Batman16 (IP - Bản quyền)' LIMIT 1)
+    
+    -- 6. Batman12 (Bỏ Batwheels 12)
+    WHEN product_name ILIKE '%Batman12%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe TE Batman12 (IP - Bản quyền)' LIMIT 1)
+    
+    -- 7. Bubbles 20 (Đã có tiền lệ BTC map)
+    WHEN product_name ILIKE '%Bubbles 20%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe Neo 20-02 Bubble' LIMIT 1)
+    
+    -- 8. Road RPD 700C (Bỏ CPD 700C và RPD 700C V5)
+    WHEN product_name ILIKE '%RPD 700C%' AND product_name NOT ILIKE '%V5%' AND product_name NOT ILIKE '%CPD%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe Road RPD 700C' LIMIT 1)
+    
+    -- 9. GRX AT 27.5 2.0 (Bỏ GRX 2.0 thường)
+    WHEN product_name ILIKE '%GRX AT 27,5%2.0%' OR product_name ILIKE '%GRX AT 27.5%2.0%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe GRX AT 27,5_2.0' LIMIT 1)
+    
+    -- 10. FLASH / The Flash
+    WHEN product_name ILIKE '%The Flash%' OR product_name ILIKE '%The flash%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe FLASH (IP - Bản quyền)' LIMIT 1)
+    
+    -- 11. New 26 (Bao gồm cả bản DA HP vì BTC đã từng map)
+    WHEN product_name ILIKE '%New 26%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe New 26' LIMIT 1)
+    
+    -- 12. New 24
+    WHEN product_name ILIKE '%New 24%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe New 24' LIMIT 1)
+    
+    -- 13. LD 24-02
+    WHEN product_name ILIKE '%LD 24-02%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe LD 24-02' LIMIT 1)
+    
+    -- 14. Neo 20-03
+    WHEN product_name ILIKE '%Neo 20-03%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe Neo 20-03' LIMIT 1)
+    
+    -- 15. LD 24-01
+    WHEN product_name ILIKE '%LD 24-01%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe LD 24-01_2023' LIMIT 1)
+    
+    -- 16. MTB 26-02
+    WHEN product_name ILIKE '%MTB 26-02%' OR product_name ILIKE '%MTB 26 02%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe MTB 26 02' LIMIT 1)
+    
+    -- 17. LD 26
+    WHEN product_name ILIKE '%LD 26%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe LD 26' LIMIT 1)
+    
+    -- 18. MTB SPD 27.5
+    WHEN product_name ILIKE '%SPD 27.5%' AND product_name ILIKE '%MTB%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe MTB SPD 27.5' LIMIT 1)
+    
+    -- 19. Nữ
+    WHEN product_name ILIKE '%Nữ%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe Nữ' LIMIT 1)
+    
+    -- 20. TE Superman 12
+    WHEN product_name ILIKE '%Super Man 12%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe TE Super Man 12 (IP - Bản quyền)' LIMIT 1)
+    
+    -- 21. TE Superman 16
+    WHEN product_name ILIKE '%Super Man 16%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe TE Super Man 16 (IP - Bản quyền)' LIMIT 1)
+    
+    -- 22. TE Powerpuff Girls 12
+    WHEN product_name ILIKE '%Powerpuff%12%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe TE Powerpuff Girls 12 (IP - Bản quyền)' LIMIT 1)
+    
+    -- 23. TE Wonder Woman 20
+    WHEN product_name ILIKE '%Wonder Woman 20%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe TE Wonder Woman 20 (IP - Bản quyền)' LIMIT 1)
+    
+    -- 24. GN 06-24 / GN 06 24 D
+    WHEN product_name ILIKE '%GN 06%24%' AND product_name NOT ILIKE '%2.0%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe GN 06-24' LIMIT 1)
+    
+    -- 25. GN 06-26 / GN 06 26 D
+    WHEN product_name ILIKE '%GN 06%26%' AND product_name NOT ILIKE '%2.0%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe GN 06-26' LIMIT 1)
+    
+    -- 26. Nam (Không bao gồm Superman/Batman)
+    WHEN product_name ILIKE '%nam%' AND product_name NOT ILIKE '%superman%' AND product_name NOT ILIKE '%batman%' THEN (SELECT line_id FROM tnbike.product_line WHERE line_name = 'Xe Nam' LIMIT 1)
+    
+    ELSE line_id
+END
+WHERE line_id IS NULL;
+
+-- BƯỚC 6: ĐỒNG BỘ LẠI LINE_ID VÀ CHI TIẾT DANH MỤC SANG BẢNG FACT_SALES (KỂ CẢ DỮ LIỆU LỊCH SỬ 2025)
+UPDATE tnbike.fact_sales AS fs
+SET line_id_fk = p.line_id,
+    line_name = pl.line_name,
+    group_code = pl.group_code,
+    group_name = pg.group_name
+FROM tnbike.product AS p
+LEFT JOIN tnbike.product_line AS pl ON pl.line_id = p.line_id
+LEFT JOIN tnbike.product_group AS pg ON pg.group_code = pl.group_code
+WHERE fs.product_code = p.product_code;
+
 COMMIT;
 
 -- KIỂM TRA LẠI KẾT QUẢ ĐÃ LÀM SẠCH
