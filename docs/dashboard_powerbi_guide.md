@@ -1,272 +1,474 @@
-# 📊 Hướng dẫn Dashboard PowerBI — Hạng mục B
-## Data Explorers 2026 | Thống Nhất Bike | 30 điểm
-### ✅ Đã kiểm tra thực tế từ Database (24/05/2026)
+# Hướng dẫn Dashboard PowerBI - Hạng mục B
+## Data Explorers 2026 | Thống Nhất Bike
 
 ---
 
-## 1. SỐ LIỆU THỰC TẾ TRONG DATABASE
+## 1. BỐI CẢNH ĐỀ BÀI VÀ PHẠM VI DỮ LIỆU
+
+### 1.1. Bối cảnh cuộc thi
+
+Data Explorers 2026 vòng 2 yêu cầu xây dựng hệ thống phân tích dữ liệu kinh doanh cho Công ty Cổ phần Xe đạp Thống Nhất.
+
+Có 3 hạng mục liên quan trực tiếp đến dashboard:
+
+1. Hạng mục A - Vận hành dữ liệu
+   - Đọc 1,132 email `.eml` tháng 3/2026.
+   - Tách PDF đính kèm.
+   - Extract thông tin đơn hàng.
+   - Validate dữ liệu.
+   - Ghi vào PostgreSQL.
+2. Hạng mục B - Phân tích
+   - Xây dựng dashboard PowerBI.
+   - Dashboard phải dùng trực tiếp dữ liệu T3/2026 do pipeline hạng mục A tạo ra.
+   - Dashboard phân tích doanh thu, sản lượng, sản phẩm, đại lý và địa lý.
+3. Hạng mục C - Dự báo
+   - Dashboard và các view phải tạo nền dữ liệu đủ sạch cho forecasting Q2/2026.
+
+### 1.2. Bản chất dữ liệu
+
+Đây là bài toán phân phối xe đạp B2B, không phải retail:
+
+- Doanh nghiệp bán sỉ cho đại lý.
+- Đại lý mua theo lô, tần suất thưa, giá trị đơn lớn.
+- Có thể có hành vi ôm hàng trước mùa cao điểm.
+- Không có dữ liệu inventory, sell-through, COGS.
+
+Vì vậy không được diễn giải dữ liệu như retail demand trực tiếp.
+
+### 1.3. Phạm vi thời gian thực tế
 
 > [!IMPORTANT]
-> Dữ liệu thực tế **chỉ có 6 tháng** — không phải 14 tháng như tài liệu ban đầu nói.
-> - **BTC cung cấp:** T1, T2, T3/2025 + T1, T2/2026 (5 tháng)
-> - **Team tự extract:** T3/2026 từ email/PDF pipeline (1 tháng)
+> Dữ liệu thực tế chỉ có 6 tháng, không phải 14 tháng liên tục.
 
-### Phân bổ data theo tháng
+| Nguồn | Tháng |
+|---|---|
+| BTC cung cấp | T1, T2, T3/2025 |
+| BTC cung cấp | T1, T2/2026 |
+| Team extract từ email/PDF | T3/2026 |
 
-| Năm | Tháng | Số đơn | Số dòng | Sản lượng | Doanh thu | Đại lý active | MoM |
-|---|---|---|---|---|---|---|---|
-| 2025 | T1 | 61 | 339 | 1,837 | 3.20 tỷ | 46 | — |
-| 2025 | T2 | 185 | 1,892 | 5,030 | 6.34 tỷ | 141 | +98.2% |
-| 2025 | T3 | 447 | 5,184 | 14,609 | 18.58 tỷ | 242 | +193.2% |
-| 2026 | T1 | 482 | 4,778 | 12,541 | 21.14 tỷ | 290 | +13.7%* |
-| 2026 | T2 | 452 | 4,838 | 12,522 | 19.39 tỷ | 268 | -8.3% |
-| 2026 | T3 | **1,132** | **8,723** | **25,607** | **40.80 tỷ** | **394** | **+110.4%** |
-| **TỔNG** | | **2,759** | **25,754** | **72,146** | **109.45 tỷ** | **798** | |
+Hệ quả:
 
-> *MoM T1/2026 so với T3/2025 (bỏ qua khoảng trống T4-T12/2025)
+- Không vẽ line chart như chuỗi 14 tháng liên tục.
+- Không gọi T1/2026 so với T3/2025 là MoM đúng nghĩa.
+- YoY chỉ có ý nghĩa cho T1, T2, T3.
+- So sánh Q1/2025 với Q1/2026 là cặp hợp lệ nhất.
 
 > [!WARNING]
-> **Không có dữ liệu T4 → T12/2025** — Đây là khoảng trống lớn. Chỉ có thể so sánh YoY đúng nghĩa cho T1, T2, T3.
-
-### So sánh cùng kỳ (YoY) — chỉ có 3 cặp tháng
-
-| Tháng | Doanh thu 2025 | Doanh thu 2026 | YoY | Sản lượng 2025 | Sản lượng 2026 | YoY qty |
-|---|---|---|---|---|---|---|
-| T1 | 3.20 tỷ | 21.14 tỷ | **+560.8%** | 1,837 | 12,541 | +583% |
-| T2 | 6.34 tỷ | 19.39 tỷ | **+206.0%** | 5,030 | 12,522 | +149% |
-| T3 | 18.58 tỷ | 40.80 tỷ | **+119.6%** | 14,609 | 25,607 | +75% |
+> Không có dữ liệu T4 đến T12/2025. Mọi visual thời gian phải ghi chú rõ khoảng trống này.
 
 ---
 
-## 2. DATA QUALITY ISSUES CẦN BIẾT
+## 2. TRẠNG THÁI DATABASE HIỆN TẠI SAU RESET VÀ PATCH
 
-> [!CAUTION]
-> Có một số vấn đề data quality ảnh hưởng trực tiếp đến dashboard.
+### 2.1. Pipeline và patch đã chạy
 
-| Vấn đề | Con số | Ảnh hưởng | Xử lý trong PowerBI |
-|---|---|---|---|
-| **90 SKU chưa map vào product_line/group** | 90/265 SKU (34%) → 13,019 chiếc (18%) → 25.28 tỷ (23%) | Trang 3 sẽ có nhóm "Chưa xếp loại" lớn | Tạo nhóm "Chưa phân loại" trong visual |
-| **97 Customer thiếu province_id** | 97/798 KH → 5.88 tỷ doanh thu | Trang 5 địa lý bị thiếu | Label là "Chưa xác định" |
-| **"Đen" vs "đen" (viết hoa/thường)** | ~2,545 chiếc bị tách ra | Trang 3 heatmap màu bị duplicate | Cần normalize trong PowerBI |
-| **Miền Nam chỉ có 4 đại lý** | 4 DL / 3,043 chiếc / 5.79 tỷ | Bản đồ miền Nam rất thưa | Ghi chú trong visual |
-| **Miền Bắc áp đảo** | 579/798 DL (72.6%) | Dashboard lệch về miền Bắc | Highlight trong insight |
-
-### Region Distribution thực tế
-| Vùng | Số đại lý | Sản lượng | Doanh thu | Tỷ trọng |
-|---|---|---|---|---|
-| Miền Bắc | 579 (72.6%) | 54,434 chiếc | 80.64 tỷ | **73.7%** |
-| Miền Trung | 118 (14.8%) | 11,215 chiếc | 17.14 tỷ | 15.7% |
-| Chưa xác định | 97 (12.2%) | 3,454 chiếc | 5.88 tỷ | 5.4% |
-| Miền Nam | **4 (0.5%)** | 3,043 chiếc | 5.79 tỷ | 5.3% |
-
-> [!NOTE]
-> Bảng `province` trong DB có 63 tỉnh nhưng phân bố region bị lệch: Miền Bắc 63 tỉnh, Miền Trung 10 tỉnh, Miền Nam 2 tỉnh — **đây là vấn đề mapping dữ liệu gốc của BTC**, không phải của team.
-
-### Top 10 tỉnh doanh thu
-| Tỉnh | Vùng | Số đại lý | Doanh thu |
-|---|---|---|---|
-| Hà Nội | Miền Bắc | 248 | 39.49 tỷ |
-| Thanh Hóa | Miền Trung | 36 | 6.04 tỷ |
-| Chưa xác định | — | 97 | 5.88 tỷ |
-| TP. Hồ Chí Minh | Miền Nam | 3 | 5.78 tỷ |
-| Ninh Bình | Miền Bắc | 22 | 5.58 tỷ |
-| Nghệ An | Miền Trung | 20 | 4.71 tỷ |
-| Hưng Yên | Miền Bắc | 49 | 4.37 tỷ |
-| Bắc Ninh | Miền Bắc | 27 | 3.56 tỷ |
-| Phú Thọ | Miền Bắc | 31 | 3.42 tỷ |
-| Bắc Giang | Miền Bắc | 11 | 3.38 tỷ |
-
----
-
-## 3. THỰC TẾ CÁC DIMENSION
-
-### Sản phẩm
-| Nhóm | SKU | Đơn hàng | Sản lượng | Doanh thu | Lưu ý |
-|---|---|---|---|---|---|
-| CITYBIKE_P (Xe phổ thông) | 65 | 2,265 | 39,697 | 59.04 tỷ | **Nhóm lớn nhất — 54%** |
-| **Chưa phân loại (NULL)** | 90 | 1,410 | 13,019 | 25.28 tỷ | ⚠️ 23% doanh thu thiếu group |
-| KIDBIKE_1 (Xe trẻ em 1) | 36 | 1,312 | 9,805 | 12.22 tỷ | |
-| KIDBIKE_2 (Xe trẻ em 2) | 23 | 751 | 6,204 | 5.57 tỷ | |
-| SPORTBIKE_S (Thể thao thép) | 34 | 468 | 2,277 | 4.24 tỷ | |
-| SPORTBIKE_A (Thể thao nhôm) | 17 | 267 | 1,144 | 3.09 tỷ | |
-| **TỔNG** | **265** | | **72,146** | **109.45 tỷ** | |
-
-### Top 5 Product Lines bán chạy nhất
-| Dòng xe | Nhóm | Sản lượng | Doanh thu | Số đại lý |
-|---|---|---|---|---|
-| Xe New 26 | CITYBIKE_P | 10,024 | 15.03 tỷ | 540 |
-| Xe New 24 | CITYBIKE_P | 6,770 | 9.42 tỷ | 472 |
-| Xe Puppy 20 | KIDBIKE_1 | 4,257 | 5.21 tỷ | 412 |
-| Xe LD 24-01_2023 | CITYBIKE_P | 3,853 | 5.89 tỷ | 349 |
-| Xe GN 06-26 2.0 | CITYBIKE_P | 3,625 | 5.50 tỷ | 383 |
-
-### Top 5 màu sắc
-| Màu | Sản lượng | Doanh thu | Lưu ý |
-|---|---|---|---|
-| Kem | 11,829 | 17.52 tỷ | **Màu #1** |
-| Đen | 7,683 | 12.98 tỷ | Cần gộp "đen" + "Đen" |
-| Hồng | 6,746 | 8.51 tỷ | |
-| Ghi | 6,655 | 11.10 tỷ | |
-| Trắng | 5,419 | 8.79 tỷ | |
-
-### Đại lý (Customer)
-| Chỉ số | Giá trị |
-|---|---|
-| Tổng đại lý trong DB | 798 |
-| Đại lý có giao dịch | 798 |
-| Top đại lý (KH-00091) | 55 đơn, 9.587 tỷ, last order T3/2026 |
-| Đại lý churn nặng nhất | KH-00002: 1 đơn hàng T1/2025, không mua từ đó (503 ngày) |
-| Email log status | 1,132 READY_TO_INSERT |
-
----
-
-## 4. Kết nối PowerBI → PostgreSQL
-
+```text
+01_create_tables.sql
+-> 02_import_data.sql
+-> extract_validate.py
+-> normalize.py
+-> load_to_database.py
+-> geo_clean_patch_final.sql
+-> db_data_quality_patch.sql
+-> audit tổng thể
 ```
+
+### 2.2. Các bảng giao dịch chính đã pass audit
+
+| Bảng | Số dòng |
+|---|---:|
+| sales_order | 2,759 |
+| order_line | 25,754 |
+| fact_sales | 25,754 |
+
+Riêng T3/2026:
+
+| Metric | Số lượng |
+|---|---:|
+| sales_order_t3 | 1,132 |
+| order_line_t3 | 8,723 |
+| fact_sales_t3 | 8,723 |
+
+Kiểm tra đã pass:
+
+- `sales_order`, `order_line`, `fact_sales` khớp tổng số dòng.
+- T3/2026 có đủ 1,132 đơn.
+- T3/2026 có đủ 8,723 dòng chi tiết.
+- `fact_sales` có đủ 8,723 dòng tháng 3.
+- Không có `order_line` thiếu trong `fact_sales`.
+- `min(order_date) = 2025-01-02`.
+- `max(order_date) = 2026-03-31`.
+- Không còn ngày placeholder `1970-01-01`.
+
+### 2.3. Địa lý đã pass patch
+
+Luồng địa lý hiện tại:
+
+```text
+province raw + province_correction_map -> province_clean
+customer.province_id -> province_clean.province_id
+fact_sales geography synced from customer + province_clean
+```
+
+Nguyên tắc đã chốt:
+
+- `province` là bảng raw, chỉ giữ để audit.
+- `province_clean` là dimension địa lý dùng cho dashboard.
+- PowerBI không dùng `province` raw cho dashboard chính.
+- `fact_sales.province_id`, `fact_sales.province_name`, `fact_sales.region` đã sync từ `customer + province_clean`.
+
+Kết quả địa lý sau patch:
+
+| Vùng | fact_rows | total_quantity | total_revenue |
+|---|---:|---:|---:|
+| Miền Bắc | 20,226 | 54,740 | 81.63 tỷ |
+| Miền Trung | 4,584 | 14,002 | 21.41 tỷ |
+| Miền Nam | 829 | 3,144 | 6.03 tỷ |
+| Chưa xác định | 115 | 260 | 0.381 tỷ |
+
+Còn 4 customer thiếu `province_id`:
+
+1. `KH-00004`: address `NULL`.
+2. `KH-00711`: có Lâm Đồng nhưng chưa nằm trong danh mục `province_clean`.
+3. `KH-00722`: có Tây Ninh nhưng chưa nằm trong danh mục `province_clean`.
+4. `KH-00757`: có Khánh Hòa nhưng chưa nằm trong danh mục `province_clean`.
+
+### 2.4. Product, group, color, customer đã audit ổn
+
+Nguyên tắc dùng trong dashboard:
+
+- Nếu còn `line_id_fk` hoặc `group_code` `NULL` thì không xóa.
+- Hiển thị nhóm đó là `Chưa phân loại`.
+- Dùng `base_color` trong dashboard chính.
+- Không normalize màu lại trong Power Query nếu database đã có `base_color`.
+
+---
+
+## 3. NHỮNG ĐIỂM TRONG GUIDE CŨ PHẢI CẬP NHẬT
+
+### 3.1. Không dùng `province` raw nữa
+
+Mọi chỗ trước đây import `tnbike.province` phải đổi sang:
+
+```text
+tnbike.province_clean
+```
+
+### 3.2. Không giữ số liệu địa lý cũ
+
+Không dùng lại các số cũ như:
+
+```text
+97 customer thiếu province_id
+5.88 tỷ doanh thu Chưa xác định
+Miền Nam 4 đại lý
+```
+
+Sau patch, phải dùng bộ số đã clean:
+
+```text
+4 customer thiếu province_id
+115 fact rows Chưa xác định
+0.381 tỷ doanh thu Chưa xác định
+```
+
+### 3.3. Không normalize color bằng Power Query nếu DB đã có `base_color`
+
+Hướng cũ dùng `Text.Proper([color])` không còn là hướng chính.
+
+Dashboard nên:
+
+- Dùng `base_color` cho KPI, slicer, heatmap tổng quan.
+- Dùng `color` cho drill-down chi tiết nếu cần.
+
+### 3.4. MoM cũ phải tách logic
+
+Phải tách thành:
+
+1. `Calendar MoM %`
+   - So sánh tháng liền trước theo lịch.
+   - Nếu thiếu T12/2025 thì T1/2026 trả `BLANK()`.
+2. `Previous Available Growth %`
+   - So với kỳ dữ liệu liền trước có trong dataset.
+   - Có thể dùng để so T1/2026 với T3/2025.
+   - Không gọi là MoM.
+
+### 3.5. BCG dùng bản clean
+
+Giữ các cải tiến đã chốt:
+
+- Dùng median thay vì average.
+- Thêm `New Launch`.
+- Thêm `revenue_share_pct`.
+- Ghi rõ annotation.
+
+Nhưng phải dùng view:
+
+```text
+v_bcg_matrix_clean
+```
+
+---
+
+## 4. BẢNG VÀ VIEW NÊN IMPORT VÀO POWERBI
+
+### 4.1. Kết nối PowerBI -> PostgreSQL
+
+```text
 Server:   localhost
 Database: tnbike_db
 User:     postgres
-Password: 442005 (hoặc theo config của bạn)
 Schema:   tnbike
 ```
 
 > [!CAUTION]
-> Không hardcode password vào file tài liệu. Password thực tế nằm trong `DB_CONFIG` của các file Python trong project.
+> Không hardcode password vào tài liệu. Dùng cấu hình thực tế trong `DB_CONFIG`.
 
-### Bảng/View cần import
-| Bảng/View | Dùng cho | Lưu ý |
+### 4.2. Bảng nên import
+
+| Table/View | Vai trò | Ghi chú |
 |---|---|---|
-| `tnbike.fact_sales` | **TẤT CẢ** (bảng chính) | 25,754 dòng |
-| `tnbike.customer` | Trang 4 - Đại lý | 798 rows |
-| `tnbike.province` | Trang 5 - Địa lý | 75 rows |
-| `tnbike.product` | Trang 3 - Sản phẩm | 265 rows |
-| `tnbike.product_group` | Trang 3 | 5 rows |
-| `tnbike.product_line` | Trang 3 | ~68 rows |
-| `tnbike.email_log` | Trang 6 - Vận hành | 1,132 rows |
-| `tnbike.sales_order` | Trang 6 - Vận hành | 2,759 rows |
+| `tnbike.fact_sales` | Fact trung tâm | Bảng chính cho hầu hết visuals |
+| `tnbike.sales_order` | Header đơn hàng | Dùng đối soát số đơn |
+| `tnbike.order_line` | Chi tiết gốc | Chỉ import nếu cần drill đến dòng gốc |
+| `tnbike.customer` | Dimension đại lý | Dùng RFM |
+| `tnbike.product` | Dimension SKU | Dùng drill-down |
+| `tnbike.product_line` | Dimension dòng sản phẩm | Dùng hierarchy |
+| `tnbike.product_group` | Dimension nhóm sản phẩm | Dùng slicer |
+| `tnbike.province_clean` | Dimension địa lý sạch | Thay cho `province` raw |
+| `tnbike.email_log` | Audit kỹ thuật | Không bắt buộc cho main dashboard |
+| `v_monthly_sales_clean` | View thời gian | Page 1, 2 |
+| `v_product_performance_clean` | View product | Page 3 |
+| `v_geo_sales_clean` | View địa lý | Page 5 |
+| `v_customer_rfm_clean` | View RFM | Page 4 |
+| `v_bcg_matrix_clean` | View BCG | Page 3 |
+| `v_data_quality_summary` | View quality | Note nhỏ Page 1 hoặc appendix |
+
+### 4.3. Bảng không dùng cho dashboard chính
+
+| Table | Lý do |
+|---|---|
+| `tnbike.province` | Bảng raw còn để audit |
+| `tnbike.province_correction_map` | Chỉ là rule transform |
 
 ---
 
-## 5. SQL Views cần tạo trong PostgreSQL trước khi import
+## 5. SQL VIEWS CẦN TẠO TRONG POSTGRESQL TRƯỚC KHI IMPORT
 
-### 5.1 RFM Analysis View (Cập nhật sau EDA)
+File triển khai chuẩn:
+
+- [powerbi_views.sql](d:/Đề thi và Data - Vòng 1 - Data Explorers/TPT_Data-Explorers-2026/database/views/powerbi_views.sql)
+
+`dashboard_powerbi_guide.md` giữ vai trò mô tả logic và phạm vi sử dụng.
+
+Sau khi bỏ Page 6, bộ view chính còn 6 view:
+
+1. `v_monthly_sales_clean`
+2. `v_product_performance_clean`
+3. `v_geo_sales_clean`
+4. `v_customer_rfm_clean`
+5. `v_bcg_matrix_clean`
+6. `v_data_quality_summary`
+
+`v_pipeline_status` không còn nằm trong flow chính của PowerBI dashboard.
+
+### 5.1. `v_monthly_sales_clean`
+
 ```sql
-CREATE OR REPLACE VIEW tnbike.v_rfm_analysis AS
+CREATE OR REPLACE VIEW tnbike.v_monthly_sales_clean AS
+SELECT
+    fiscal_year,
+    fiscal_quarter,
+    fiscal_month,
+    MAKE_DATE(fiscal_year::int, fiscal_month::int, 1) AS month_start,
+    fiscal_year::TEXT || '-T' || fiscal_month::TEXT AS period_label,
+    COUNT(DISTINCT so_number) AS order_count,
+    COUNT(*) AS fact_rows,
+    COUNT(DISTINCT customer_code) AS active_dealers,
+    COUNT(DISTINCT product_code) AS active_skus,
+    SUM(quantity) AS total_quantity,
+    SUM(line_total) AS total_revenue,
+    AVG(line_total) AS avg_line_total,
+    SUM(line_total) / NULLIF(COUNT(DISTINCT so_number), 0) AS avg_revenue_per_order,
+    SUM(line_total) / NULLIF(COUNT(DISTINCT customer_code), 0) AS avg_revenue_per_dealer
+FROM tnbike.fact_sales
+GROUP BY
+    fiscal_year,
+    fiscal_quarter,
+    fiscal_month
+ORDER BY
+    fiscal_year,
+    fiscal_month;
+```
+
+### 5.2. `v_product_performance_clean`
+
+```sql
+CREATE OR REPLACE VIEW tnbike.v_product_performance_clean AS
+SELECT
+    COALESCE(group_code, 'UNCLASSIFIED') AS group_code,
+    COALESCE(group_name, 'Chưa phân loại') AS group_name,
+    COALESCE(line_name, 'Chưa phân loại') AS line_name,
+    product_code,
+    product_name,
+    COALESCE(color, 'Chưa xác định') AS color,
+    COALESCE(base_color, 'Chưa xác định') AS base_color,
+    COUNT(DISTINCT so_number) AS order_count,
+    COUNT(DISTINCT customer_code) AS active_dealers,
+    SUM(quantity) AS total_quantity,
+    SUM(line_total) AS total_revenue,
+    AVG(unit_price) AS avg_unit_price,
+    MIN(order_date) AS first_order_date,
+    MAX(order_date) AS last_order_date
+FROM tnbike.fact_sales
+GROUP BY
+    COALESCE(group_code, 'UNCLASSIFIED'),
+    COALESCE(group_name, 'Chưa phân loại'),
+    COALESCE(line_name, 'Chưa phân loại'),
+    product_code,
+    product_name,
+    COALESCE(color, 'Chưa xác định'),
+    COALESCE(base_color, 'Chưa xác định');
+```
+
+### 5.3. `v_geo_sales_clean`
+
+```sql
+CREATE OR REPLACE VIEW tnbike.v_geo_sales_clean AS
+SELECT
+    COALESCE(region, 'Chưa xác định') AS region,
+    COALESCE(province_name, 'Chưa xác định') AS province_name,
+    COUNT(*) AS fact_rows,
+    COUNT(DISTINCT customer_code) AS active_dealers,
+    COUNT(DISTINCT so_number) AS order_count,
+    COUNT(DISTINCT product_code) AS active_skus,
+    SUM(quantity) AS total_quantity,
+    SUM(line_total) AS total_revenue,
+    SUM(line_total) / NULLIF(COUNT(DISTINCT customer_code), 0) AS avg_revenue_per_dealer
+FROM tnbike.fact_sales
+GROUP BY
+    COALESCE(region, 'Chưa xác định'),
+    COALESCE(province_name, 'Chưa xác định');
+```
+
+Ghi chú:
+
+- View này dùng geography đã sync trong `fact_sales`.
+- Không join `tnbike.province` raw.
+- Nếu cần matrix `Region x Product Group`, dùng trực tiếp `fact_sales` hoặc tạo view phụ riêng.
+
+### 5.4. `v_customer_rfm_clean`
+
+```sql
+CREATE OR REPLACE VIEW tnbike.v_customer_rfm_clean AS
 WITH rfm_raw AS (
     SELECT
         f.customer_code,
         c.customer_name,
         c.customer_tier,
-        COALESCE(pr.province_name, 'Chưa xác định') AS province_name,
-        COALESCE(pr.region, 'Chưa xác định') AS region,
+        c.tax_code,
+        c.address,
+        COALESCE(f.province_name, 'Chưa xác định') AS province_name,
+        COALESCE(f.region, 'Chưa xác định') AS region,
+        MIN(f.order_date) AS first_order_date,
         MAX(f.order_date) AS last_order_date,
         DATE '2026-03-31' - MAX(f.order_date) AS recency_days,
         COUNT(DISTINCT f.so_number) AS frequency,
+        COUNT(*) AS fact_rows,
+        COUNT(DISTINCT f.product_code) AS sku_count,
+        SUM(f.quantity) AS total_quantity,
         SUM(f.line_total) AS monetary
     FROM tnbike.fact_sales f
-    JOIN tnbike.customer c ON c.customer_code = f.customer_code
-    LEFT JOIN tnbike.province pr ON pr.province_id = c.province_id
-    GROUP BY f.customer_code, c.customer_name, c.customer_tier, 
-             pr.province_name, pr.region
+    JOIN tnbike.customer c
+        ON c.customer_code = f.customer_code
+    GROUP BY
+        f.customer_code,
+        c.customer_name,
+        c.customer_tier,
+        c.tax_code,
+        c.address,
+        COALESCE(f.province_name, 'Chưa xác định'),
+        COALESCE(f.region, 'Chưa xác định')
 ),
 rfm_scored AS (
     SELECT *,
-        -- R Score: Dựa trên chu kỳ B2B
         CASE
             WHEN recency_days <= 30  THEN 5
             WHEN recency_days <= 60  THEN 4
             WHEN recency_days <= 90  THEN 3
             WHEN recency_days <= 180 THEN 2
-            ELSE                          1
+            ELSE 1
         END AS r_score,
-        
-        -- F Score: Dựa trên phân bố B2B 6 tháng
         CASE
             WHEN frequency >= 10 THEN 5
             WHEN frequency >= 6  THEN 4
             WHEN frequency >= 3  THEN 3
             WHEN frequency >= 2  THEN 2
-            ELSE                      1
+            ELSE 1
         END AS f_score,
-        
-        -- M Score: Dựa trên doanh thu thực tế
         CASE
-            WHEN monetary >= 1000000000  THEN 5  -- >=1 tỷ
-            WHEN monetary >= 300000000   THEN 4  -- >=300 triệu
-            WHEN monetary >= 100000000   THEN 3  -- >=100 triệu
-            WHEN monetary >= 30000000    THEN 2  -- >=30 triệu
-            ELSE                              1  -- <30 triệu
+            WHEN monetary >= 1000000000 THEN 5
+            WHEN monetary >= 300000000  THEN 4
+            WHEN monetary >= 100000000  THEN 3
+            WHEN monetary >= 30000000   THEN 2
+            ELSE 1
         END AS m_score
     FROM rfm_raw
 )
 SELECT *,
-    r_score + f_score + m_score AS rfm_total, -- Tổng điểm (để làm màu heatmap nếu cần)
+    r_score + f_score + m_score AS rfm_total,
     CASE
-        -- Rất siêng mua, mua gần đây và chi cực nhiều -> Vua/Tướng (Bảo vệ bằng mọi giá)
         WHEN r_score >= 4 AND f_score >= 4 AND m_score >= 4 THEN 'Champions'
-        
-        -- Mua gần đây, mua thường xuyên nhưng chưa chi siêu lớn -> Khách trung thành
         WHEN r_score >= 4 AND f_score >= 3 AND m_score >= 3 THEN 'Loyal'
-        
-        -- CHỈ CÓ TRONG B2B: Lâu lâu mới mua 1 đơn, nhưng đơn đó trị giá tiền tỷ!
         WHEN r_score >= 3 AND f_score <= 2 AND m_score >= 4 THEN 'Big Spender'
-        
-        -- Mọi thứ ở mức khá, có tiềm năng upsell thêm
         WHEN r_score >= 3 AND f_score >= 2 AND m_score >= 2 THEN 'Potential'
-        
-        -- Mua gần đây, nhưng mới có 1 đơn và tiền chưa nhiều -> Khách mới tinh
-        WHEN r_score >= 4 AND f_score = 1  AND m_score <= 3 THEN 'New'
-        
-        -- Từng mua tốt, chi nhiều nhưng dạo này LÂU RỒI KHÔNG THẤY MUA -> Có nguy cơ bỏ đi sang đối thủ
+        WHEN r_score >= 4 AND f_score = 1 AND m_score <= 3 THEN 'New'
         WHEN r_score <= 2 AND f_score >= 3 AND m_score >= 3 THEN 'At Risk'
-        
-        -- Đã ngủ đông lâu ngày, từng có mua bán khá khẩm
         WHEN r_score <= 2 AND (f_score >= 2 OR m_score >= 2) THEN 'Hibernating'
-        
-        -- Mua đúng 1 lần rất ít tiền, và bặt vô âm tín luôn -> Coi như đã mất
         ELSE 'Lost'
     END AS rfm_segment
 FROM rfm_scored;
-
 ```
 
-> [!TIP]
-> View trên đã được **tùy chỉnh cho B2B**. Nó thay thế hàm NTILE(5) ban đầu bằng các ngưỡng business-driven, và thêm nhóm **"Big Spender"** (chi lớn nhưng tần suất thấp — đại lý mua sỉ theo quý).
-
-### 5.2 BCG Matrix View
-
-> [!NOTE]
-> **Phiên bản cải tiến v2** — sửa 3 lỗi thiết kế so với bản gốc (xem giải thích bên dưới SQL).
+### 5.5. `v_bcg_matrix_clean`
 
 ```sql
-CREATE OR REPLACE VIEW tnbike.v_bcg_matrix AS
+CREATE OR REPLACE VIEW tnbike.v_bcg_matrix_clean AS
 WITH revenue_by_line AS (
     SELECT
         line_name,
         group_code,
         group_name,
-        -- Chỉ lấy dòng xe đã phân loại (line_name IS NOT NULL).
-        -- 90 SKU chưa phân loại (25.28 tỷ, 23%) bị loại — xem cột revenue_share_pct để rõ scope.
-        SUM(CASE WHEN fiscal_year=2026 AND fiscal_month BETWEEN 1 AND 3 THEN line_total ELSE 0 END) AS rev_q1_2026,
-        SUM(CASE WHEN fiscal_year=2025 AND fiscal_month BETWEEN 1 AND 3 THEN line_total ELSE 0 END) AS rev_q1_2025,
+        SUM(CASE
+            WHEN fiscal_year = 2026 AND fiscal_month BETWEEN 1 AND 3
+            THEN line_total ELSE 0
+        END) AS rev_q1_2026,
+        SUM(CASE
+            WHEN fiscal_year = 2025 AND fiscal_month BETWEEN 1 AND 3
+            THEN line_total ELSE 0
+        END) AS rev_q1_2025,
         SUM(line_total) AS total_revenue,
-        SUM(quantity)   AS total_qty
+        SUM(quantity) AS total_qty,
+        COUNT(DISTINCT product_code) AS sku_count,
+        COUNT(DISTINCT customer_code) AS active_dealers
     FROM tnbike.fact_sales
     WHERE line_name IS NOT NULL
-    GROUP BY line_name, group_code, group_name
+      AND group_code IS NOT NULL
+    GROUP BY
+        line_name,
+        group_code,
+        group_name
 ),
 with_growth AS (
     SELECT *,
-        -- YoY chỉ tính được Q1 (T1-T3) vì đây là khoảng duy nhất có data đầy đủ cả 2 năm.
-        -- NULLIF(rev_q1_2025, 0) → tránh chia-cho-0; kết quả NULL nếu không có data 2025.
-        ROUND(100.0 * (rev_q1_2026 - rev_q1_2025) / NULLIF(rev_q1_2025, 0), 1) AS growth_pct_yoy
+        ROUND(
+            100.0 * (rev_q1_2026 - rev_q1_2025) / NULLIF(rev_q1_2025, 0),
+            1
+        ) AS growth_pct_yoy
     FROM revenue_by_line
 ),
 with_median AS (
     SELECT *,
-        -- [FIX 2] Dùng MEDIAN thay vì AVG làm ngưỡng "thị phần cao/thấp".
-        -- Lý do: Doanh thu product line lệch phải (Xe New 26 = 15 tỷ kéo AVG lên cao).
-        -- Median robust với outlier — cùng lý luận đã áp dụng cho RFM Monetary scoring.
         PERCENTILE_CONT(0.5) WITHIN GROUP (ORDER BY total_revenue) OVER () AS median_revenue,
         SUM(total_revenue) OVER () AS total_classified_revenue
     FROM with_growth
@@ -280,143 +482,195 @@ SELECT
     growth_pct_yoy,
     total_revenue,
     total_qty,
+    sku_count,
+    active_dealers,
     median_revenue,
-    -- [FIX 1] Tỷ trọng trong tổng doanh thu classified — dùng làm bubble size trong Scatter Plot Power BI.
-    -- Giúp người xem thấy rõ BCG chỉ cover một phần tổng doanh thu.
-    ROUND(100.0 * total_revenue / NULLIF(total_classified_revenue, 0), 1) AS revenue_share_pct,
+    ROUND(
+        100.0 * total_revenue / NULLIF(total_classified_revenue, 0),
+        1
+    ) AS revenue_share_pct,
     CASE
-        -- [FIX 3] Xe mới ra mắt trong 2026: không có lịch sử Q1/2025 để so YoY.
-        -- Không nên xếp vào Stars/Dogs khi thiếu dữ liệu — tách riêng thành 'New Launch'.
-        WHEN rev_q1_2025 = 0 AND rev_q1_2026 > 0
-            THEN 'New Launch'
-
-        -- Stars: Doanh thu CAO (trên median) + Tăng trưởng DƯƠNG → đầu tư mạnh
-        WHEN total_revenue > median_revenue AND COALESCE(growth_pct_yoy, 0) > 0
-            THEN 'Stars'
-
-        -- Cash Cows: Doanh thu CAO + Tăng trưởng KHÔNG dương → khai thác, không đầu tư thêm
-        WHEN total_revenue > median_revenue AND COALESCE(growth_pct_yoy, 0) <= 0
-            THEN 'Cash Cows'
-
-        -- Question Marks: Doanh thu THẤP + Tăng trưởng DƯƠNG → cân nhắc đầu tư
-        WHEN total_revenue <= median_revenue AND COALESCE(growth_pct_yoy, 0) > 0
-            THEN 'Question Marks'
-
-        -- Dogs: Doanh thu THẤP + Tăng trưởng KHÔNG dương → xem xét loại bỏ
+        WHEN rev_q1_2025 = 0 AND rev_q1_2026 > 0 THEN 'New Launch'
+        WHEN total_revenue > median_revenue AND COALESCE(growth_pct_yoy, 0) > 0 THEN 'Stars'
+        WHEN total_revenue > median_revenue AND COALESCE(growth_pct_yoy, 0) <= 0 THEN 'Cash Cows'
+        WHEN total_revenue <= median_revenue AND COALESCE(growth_pct_yoy, 0) > 0 THEN 'Question Marks'
         ELSE 'Dogs'
     END AS bcg_category
-FROM with_median
-ORDER BY total_revenue DESC;
+FROM with_median;
 ```
 
 > [!IMPORTANT]
-> **3 cải tiến so với bản gốc — lý do kỹ thuật + business:**
->
-> | # | Thay đổi | Lý do |
-> |---|---|---|
-> | **Fix 1** | Thêm cột `revenue_share_pct` | BCG chỉ cover ~77% doanh thu (90 SKU chưa phân loại bị loại). Người xem dashboard phải thấy scope này rõ ràng — không để mislead. |
-> | **Fix 2** | `AVG` → `PERCENTILE_CONT(0.5)` (Median) | Xe New 26 (15 tỷ) là outlier lớn. Nếu dùng AVG, ngưỡng bị kéo lên làm nhiều dòng xe "trung bình thực sự" bị gán "thị phần thấp". Median robust với phân bố lệch — cùng logic đã áp dụng cho RFM Monetary. |
-> | **Fix 3** | Thêm `'New Launch'` category | Dòng xe chỉ có data 2026 (không có Q1/2025) bị `growth_pct_yoy = NULL → COALESCE = 0` → gán nhầm "Dogs". Xe mới ra mắt phải được tách riêng, không đánh giá sớm. |
->
-> **Những gì không thể thay đổi với data hiện tại:**
-> - Vẫn so sánh Q1/2025 vs Q1/2026 — đây là cặp dữ liệu đầy đủ **duy nhất** (không có T4-T12/2025).
-> - Vẫn dùng "Internal BCG" (so sánh nội bộ) — không có dữ liệu thị trường ngành xe đạp Việt Nam.
-> - **Bắt buộc ghi annotation trong Power BI:** `"BCG Matrix dùng doanh thu nội bộ làm proxy thị phần. Chỉ bao gồm 175/265 SKU đã phân loại (~77% doanh thu). Tăng trưởng tính theo Q1/2025 vs Q1/2026."`
+> BCG Matrix dùng doanh thu nội bộ làm proxy thị phần. Chỉ bao gồm product lines đã phân loại. Tăng trưởng tính theo Q1/2025 vs Q1/2026 do thiếu dữ liệu T4-T12/2025.
 
-### 5.3 Pipeline Status View (cho Trang 6)
+### 5.6. `v_data_quality_summary`
+
 ```sql
-CREATE OR REPLACE VIEW tnbike.v_pipeline_status AS
+CREATE OR REPLACE VIEW tnbike.v_data_quality_summary AS
 SELECT
-    processing_status,
-    COUNT(*) AS email_count
-FROM tnbike.email_log
-GROUP BY processing_status;
--- Kết quả: READY_TO_INSERT = 1,132
-```
+    'customers_missing_province' AS issue,
+    COUNT(*)::NUMERIC AS issue_count,
+    NULL::NUMERIC AS affected_revenue
+FROM tnbike.customer
+WHERE province_id IS NULL
 
-### 5.4 Fix màu sắc (UPPER/LOWER case)
+UNION ALL
 
-> [!IMPORTANT]
-> **Chạy BƯỚC NÀY TRƯỚC khi tạo views 5.1/5.2/5.3** vì `fact_sales.color` là cột denormalized — nếu normalize sau thì views đọc color cũ.
-
-```sql
--- BƯỚC 1: Normalize color trong bảng product (chạy 1 lần duy nhất)
-UPDATE tnbike.product
-SET color = INITCAP(LOWER(color))
-WHERE color IS NOT NULL;
--- Kết quả: "đen" và "Đen" → đều thành "Đen" (INITCAP viết hoa chữ đầu)
-
--- BƯỚC 2: Sync lại cột color trong fact_sales từ product
--- (chỉ cập nhật đúng cột color — an toàn, nhanh, không ảnh hưởng các cột khác)
-UPDATE tnbike.fact_sales AS fs
-SET color = p.color
-FROM tnbike.product AS p
-WHERE fs.product_code = p.product_code;
-
--- Kiểm tra kết quả sau khi chạy:
-SELECT color, COUNT(*) as so_dong
+SELECT
+    'fact_rows_missing_geography',
+    COUNT(*)::NUMERIC,
+    SUM(line_total)::NUMERIC
 FROM tnbike.fact_sales
-GROUP BY color
-ORDER BY so_dong DESC
-LIMIT 10;
--- Kết quả mong đợi: chỉ có "Đen" (hoa), không còn "đen" (thường)
-```
+WHERE province_id IS NULL
+   OR province_name IS NULL
+   OR region IS NULL
 
-> [!TIP]
-> **Chạy qua Python script** (khuyến nghị): File `normalize_color.py` đã được tạo sẵn trong project — chạy `python normalize_color.py` để thực hiện 2 bước trên và xem kết quả kiểm tra ngay.
+UNION ALL
+
+SELECT
+    'sku_missing_group',
+    COUNT(DISTINCT product_code)::NUMERIC,
+    SUM(line_total)::NUMERIC
+FROM tnbike.fact_sales
+WHERE line_id_fk IS NULL
+   OR group_code IS NULL
+
+UNION ALL
+
+SELECT
+    'customers_missing_tax_code',
+    COUNT(*)::NUMERIC,
+    NULL::NUMERIC
+FROM tnbike.customer
+WHERE tax_code IS NULL
+   OR TRIM(tax_code) = '';
+```
 
 ---
 
-## 6. DAX Measures — Chỉnh theo 6 tháng thực tế
+## 6. DAX MEASURES
+
+File triển khai chuẩn:
+
+- [powerbi_dax_measures.md](d:/Đề thi và Data - Vòng 1 - Data Explorers/TPT_Data-Explorers-2026/docs/powerbi_dax_measures.md)
+
+Phần dưới đây là bản tóm tắt để bám khi build dashboard.
 
 ```dax
-// === MEASURES CƠ BẢN ===
 Total Revenue = SUM(fact_sales[line_total])
 Total Quantity = SUM(fact_sales[quantity])
 Total Orders = DISTINCTCOUNT(fact_sales[so_number])
 Active Dealers = DISTINCTCOUNT(fact_sales[customer_code])
 Avg Revenue per Order = DIVIDE([Total Revenue], [Total Orders])
 Avg Revenue per Dealer = DIVIDE([Total Revenue], [Active Dealers])
+```
 
-// === MoM (áp dụng được toàn bộ 6 điểm) ===
-// ⚠️ Lưu ý: MoM T1/2026 sẽ trả về BLANK vì không có data T12/2025 (gap T4-T12/2025).
-// Đây là hành vi đúng — không phải lỗi. Ghi chú trong dashboard tooltip.
-Revenue MoM % =
+### 6.1. Calendar MoM
+
+```dax
+Revenue Calendar MoM % =
 VAR cur = [Total Revenue]
-VAR prev = CALCULATE([Total Revenue], DATEADD(fact_sales[order_date], -1, MONTH))
-RETURN DIVIDE(cur - prev, ABS(prev))
+VAR prev =
+    CALCULATE(
+        [Total Revenue],
+        DATEADD('Date'[Date], -1, MONTH)
+    )
+RETURN
+DIVIDE(cur - prev, prev)
+```
 
-// === YoY — CHỈ CÓ THỂ SO SÁNH T1, T2, T3 ===
+Lưu ý:
+
+- T1/2026 sẽ `BLANK()` vì thiếu T12/2025.
+- Đây là hành vi đúng.
+
+### 6.2. Previous Available Growth
+
+```dax
+Revenue Previous Available Period =
+VAR curPeriod = MAX(fact_sales[fiscal_year]) * 12 + MAX(fact_sales[fiscal_month])
+VAR prevPeriod =
+    MAXX(
+        FILTER(
+            ALL(fact_sales[fiscal_year], fact_sales[fiscal_month]),
+            fact_sales[fiscal_year] * 12 + fact_sales[fiscal_month] < curPeriod
+        ),
+        fact_sales[fiscal_year] * 12 + fact_sales[fiscal_month]
+    )
+RETURN
+CALCULATE(
+    [Total Revenue],
+    FILTER(
+        ALL(fact_sales),
+        fact_sales[fiscal_year] * 12 + fact_sales[fiscal_month] = prevPeriod
+    )
+)
+```
+
+```dax
+Revenue Previous Available Growth % =
+VAR cur = [Total Revenue]
+VAR prev = [Revenue Previous Available Period]
+RETURN
+DIVIDE(cur - prev, prev)
+```
+
+### 6.3. YoY
+
+```dax
 Revenue YoY % =
+VAR curYear = MAX(fact_sales[fiscal_year])
+VAR curMonth = MAX(fact_sales[fiscal_month])
 VAR cur = [Total Revenue]
-VAR same_last_year = CALCULATE([Total Revenue],
-    DATEADD(fact_sales[order_date], -1, YEAR))
-RETURN DIVIDE(cur - same_last_year, ABS(same_last_year))
+VAR prev =
+    CALCULATE(
+        [Total Revenue],
+        REMOVEFILTERS(fact_sales[fiscal_year], fact_sales[fiscal_month]),
+        fact_sales[fiscal_year] = curYear - 1,
+        fact_sales[fiscal_month] = curMonth
+    )
+RETURN
+DIVIDE(cur - prev, prev)
+```
 
-// Q1 so sánh (Q1 = fiscal_quarter=1 = T1+T2+T3)
-Revenue Q1 2025 = CALCULATE([Total Revenue], fact_sales[fiscal_year]=2025, fact_sales[fiscal_quarter]=1)
-Revenue Q1 2026 = CALCULATE([Total Revenue], fact_sales[fiscal_year]=2026, fact_sales[fiscal_quarter]=1)
-Growth Q1 YoY = DIVIDE([Revenue Q1 2026] - [Revenue Q1 2025], [Revenue Q1 2025])
-// Q1/2025 = 3.20+6.34+18.58 = 28.12 tỷ | Q1/2026 = 21.14+19.39+40.80 = 81.33 tỷ
-// Kết quả thực tế: (81.33-28.12)/28.12 = +189.2%
+### 6.4. Q1 và T3
 
-// T3 (tháng cao điểm có data của cả 2 năm)
-Revenue T3 2025 = CALCULATE([Total Revenue], fact_sales[fiscal_year]=2025, fact_sales[fiscal_month]=3)
-Revenue T3 2026 = CALCULATE([Total Revenue], fact_sales[fiscal_year]=2026, fact_sales[fiscal_month]=3)
-// Kết quả thực tế T3: +119.6%
+```dax
+Revenue Q1 2025 =
+CALCULATE([Total Revenue], fact_sales[fiscal_year] = 2025, fact_sales[fiscal_quarter] = 1)
 
-// === PARETO — TOP 20% DEALERS ===
+Revenue Q1 2026 =
+CALCULATE([Total Revenue], fact_sales[fiscal_year] = 2026, fact_sales[fiscal_quarter] = 1)
+
+Growth Q1 YoY =
+DIVIDE([Revenue Q1 2026] - [Revenue Q1 2025], [Revenue Q1 2025])
+
+Revenue T3 2025 =
+CALCULATE([Total Revenue], fact_sales[fiscal_year] = 2025, fact_sales[fiscal_month] = 3)
+
+Revenue T3 2026 =
+CALCULATE([Total Revenue], fact_sales[fiscal_year] = 2026, fact_sales[fiscal_month] = 3)
+```
+
+### 6.5. Pareto và churn
+
+```dax
 Revenue Share Top 20pct =
-VAR top_n = ROUNDUP(COUNTROWS(VALUES(fact_sales[customer_code])) * 0.2, 0)
-VAR top_dealers = TOPN(top_n,
-    SUMMARIZE(ALL(fact_sales), fact_sales[customer_code], "r", [Total Revenue]),
-    [r], DESC)
-VAR top_rev = SUMX(top_dealers, [r])
-RETURN DIVIDE(top_rev, CALCULATE([Total Revenue], ALL(fact_sales[customer_code])))
-// Để tính: top 160 dealers (20% của 798) chiếm bao nhiêu %
+VAR dealerTable =
+    ADDCOLUMNS(
+        ALLSELECTED(fact_sales[customer_code]),
+        "DealerRevenue", [Total Revenue]
+    )
+VAR topNValue =
+    ROUNDUP(COUNTROWS(dealerTable) * 0.2, 0)
+VAR topDealers =
+    TOPN(topNValue, dealerTable, [DealerRevenue], DESC)
+VAR topRevenue =
+    SUMX(topDealers, [DealerRevenue])
+RETURN
+DIVIDE(topRevenue, [Total Revenue])
+```
 
-// === CHURN SIGNAL ===
-// Lấy ngày cuối cùng trong data = 2026-03-31
+```dax
 Churn Risk Dealers =
 CALCULATE(
     DISTINCTCOUNT(fact_sales[customer_code]),
@@ -425,279 +679,110 @@ CALCULATE(
         CALCULATE(MAX(fact_sales[order_date])) < DATE(2026, 1, 1)
     )
 )
-// Đại lý không mua trong 2026 (last order trong 2025) = churn signal
-
-// === KPI TARGETS Q2/2026 ===
-// Đặt mục tiêu dựa trên Q1/2026 + growth rate
-Target Revenue Q2 2026 = [Revenue Q1 2026] * 1.10   // +10% vs Q1/2026
-Target Qty Q2 2026 =
-CALCULATE([Total Quantity], fact_sales[fiscal_year]=2026, fact_sales[fiscal_quarter]=1) * 1.10
-
-// === GROUP REVENUE SHARE ===
-Group Revenue Share =
-DIVIDE([Total Revenue],
-    CALCULATE([Total Revenue], ALL(fact_sales[group_code])))
 ```
 
 ---
 
-## 7. Sáu màn hình bắt buộc
+## 7. NĂM MÀN HÌNH DASHBOARD
 
-### 📄 TRANG 1: Tổng quan kinh doanh
+### Page 1 - Executive Overview
 
-**KPI Cards (số thực):**
-- Tổng doanh thu: **109.45 tỷ** (6 tháng)
-- Doanh thu T3/2026: **40.80 tỷ** (+110.4% MoM, +119.6% YoY)
-- Tổng đơn hàng: **2,759**
-- Sản lượng: **72,146 chiếc**
-- Đại lý active: **798** (nhưng chỉ 394 đặt hàng trong T3/2026)
+Visuals:
 
-**Phễu Pipeline T3/2026 (từ email_log):**
-```
-1,132 emails đã xử lý
-    └── 1,132 READY_TO_INSERT (100% thành công)
-        └── 1,132 đơn → sales_order
-```
+- KPI cards: total revenue, revenue T3/2026, total orders, total quantity, active dealers.
+- KPI tăng trưởng: T3 YoY, Q1 YoY, Previous Available Growth.
+- Monthly revenue chart 6 điểm dữ liệu.
+- Q1/2025 vs Q1/2026 comparison.
+- Small note/table từ `v_data_quality_summary`.
+- Text note: `T3/2026 imported 1,132 orders | 8,723 order lines | 8,723 fact rows`.
 
-**Layout:**
-```
-[Card] 40.8 tỷ doanh thu T3/2026
-[Card] 1,132 đơn T3/2026 (từ pipeline email)
-[Card] 25,607 chiếc sản lượng T3/2026
-[Card] 394 đại lý active T3/2026
-[KPI] T3 YoY: +119.6%   [KPI] T3 MoM: +110.4%
+### Page 2 - Time Analysis
 
-[Line Chart: Doanh thu 6 tháng — 6 điểm dữ liệu]
-   2025-T1: 3.2ty | T2: 6.3ty | T3: 18.6ty || 2026-T1: 21.1ty | T2: 19.4ty | T3: 40.8ty
-   ↑ Annotation: "Không có data T4-T12/2025"
+Visuals:
 
-[Clustered Bar: Q1/2025 vs Q1/2026 by Group (Q1 YoY: +189.2%)]
-[Funnel: Pipeline 1,132 emails T3/2026]
-```
+- Clustered bar T1-T3 theo năm.
+- Matrix month x year với revenue, quantity.
+- YoY % by month.
+- Previous Available Growth.
 
-> [!WARNING]
-> Line chart chỉ có 6 điểm — **bỏ qua T4-T12/2025**. Cần thêm chú thích "Dữ liệu hiện có: T1-T3/2025 và T1-T3/2026" để tránh hiểu nhầm.
+Lưu ý:
+
+- Không claim seasonality mạnh từ 6 điểm.
+- Không forecast dài hạn từ 6 điểm.
+
+### Page 3 - Product Analysis
+
+Visuals:
+
+- Revenue by `group_name`.
+- Top product lines.
+- Top SKU.
+- Heatmap `line_name x base_color`.
+- BCG scatter từ `v_bcg_matrix_clean`.
+- Card cho nhóm `Chưa phân loại`.
+
+### Page 4 - Dealer / Customer / RFM
+
+Visuals:
+
+- Cards theo segment: Champions, Loyal, At Risk, Hibernating, Lost.
+- Scatter R/F/M.
+- Top customers by monetary.
+- At Risk customers.
+- Big Spender customers.
+- Pareto top 20% dealers.
+
+### Page 5 - Geography Analysis
+
+Visuals:
+
+- Revenue by region.
+- Top province by revenue.
+- Province treemap.
+- Active dealers by region.
+
+Lưu ý:
+
+- Dùng geography clean.
+- Không dùng lại các con số cũ trước patch.
+- Giữ nhóm `Chưa xác định`.
 
 ---
 
-### 📄 TRANG 2: Phân tích thời gian
+## 8. INSIGHTS KINH DOANH NÊN GIỮ
 
-**Thực tế có thể làm:**
-- ✅ So sánh YoY: T1, T2, T3 (chỉ 3 cặp)
-- ✅ MoM trend: cả 6 tháng
-- ✅ Q1/2025 vs Q1/2026 (đủ data)
-- ❌ Pattern mùa vụ: **không đủ data** (thiếu T4-T12/2025)
-
-**Layout:**
-```
-[Line: 6 tháng — highlight T3 là cao nhất cả 2 năm]
-[Clustered Bar: T1/T2/T3 mỗi năm, grouped by year]
-[Matrix: Month (T1-T3) × Year (2025/2026) × Revenue — so sánh trực tiếp]
-[Bar: MoM % change — 5 mũi tên +98% +193% (gap) +14% -8% +110%]
-```
-
-**DAX cụ thể cho matrix so sánh:**
-```dax
-// Tạo measure để hiển thị cả 2 năm cạnh nhau
-Revenue by Month =
-CALCULATE([Total Revenue],
-    KEEPFILTERS(fact_sales[fiscal_month]))
-```
+1. T3 là tháng đỉnh trong phạm vi dữ liệu hiện có.
+2. Có concentration risk theo đại lý và địa lý.
+3. Nhóm `Chưa phân loại` là data quality issue có ảnh hưởng business.
+4. Có nhóm single-purchase churn cần retention.
+5. BCG chỉ là internal proxy, cần annotation rõ.
 
 ---
 
-### 📄 TRANG 3: Phân tích sản phẩm
+## 9. THỨ TỰ THỰC HIỆN
 
-**Thực tế cần lưu ý:**
-- **90 SKU (34%) chưa có group** → nhóm "Chưa phân loại" chiếm 25.28 tỷ (23%)
-- Xe New 26 là dòng bán chạy nhất (10,024 chiếc)
-- Màu Kem #1 bán chạy nhất (11,829 chiếc)
-- BCG chỉ có thể tính growth Q1/2025 vs Q1/2026
-
-**Layout:**
-```
-[Slicer: Group] [Slicer: Line]
-
-[Donut: Revenue by Group — 5 nhóm + 1 "Chưa phân loại"]
-[Bar: Top 10 Product Lines]
-
-[Scatter BCG: line_name × (total_revenue, growth_pct_yoy), Size=revenue_share_pct]
-   5 màu: Stars / Cash Cows / Question Marks / Dogs / New Launch (xe mới 2026)
-   Stars: Xe New 26/24 (revenue trên median + growth dương)
-   Cash Cows: dòng xe revenue cao nhưng tăng trưởng ≤0
-   Annotation: "BCG cover 175/265 SKU (~77% DT). 90 SKU chưa phân loại không xuất hiện."
-
-[Matrix Heatmap: Line × Color → Quantity]
-   Chú ý: gộp "đen" + "Đen" bằng DAX hoặc Power Query
-```
-
-**Fix màu trong Power Query (M Language):**
-```m
-= Table.TransformColumns(#"Previous Step",
-    {{"color", Text.Proper, type text}})
+```text
+Bước 1 - Tạo 6 SQL views
+Bước 1a - Chạy file `database/views/powerbi_views.sql`
+Bước 2 - Import bảng và views vào PowerBI
+Bước 3 - Tạo Date Table và relationships
+Bước 4 - Tạo DAX measures theo `docs/powerbi_dax_measures.md`
+Bước 5 - Build 5 pages
+Bước 6 - Thêm insights và notes data quality
 ```
 
 ---
 
-### 📄 TRANG 4: Phân tích đại lý
+## 10. LƯU Ý QUAN TRỌNG KHI TRÌNH BÀY
 
-**Số liệu thực tế:**
-- Tổng: 798 đại lý có giao dịch
-- Top dealer: KH-00091 (9.587 tỷ, 55 đơn, còn active T3/2026)
-- Churn nặng: KH-00002, KH-00003, KH-00005... (chỉ 1 đơn từ T1/2025, ~500 ngày không mua)
-- Concentration risk: cần tính top 20% = 160 đại lý chiếm bao nhiêu %
-
-**Layout:**
-```
-[Card] Champions  [Card] Loyal  [Card] At Risk  [Card] Lost/Churn(recency>365 ngay)
-
-[Scatter: F_score(trục Y) × R_score(trục X), Size=monetary, Color=rfm_segment]
-   — Data từ view v_rfm_analysis
-
-[Table: Top 20 đại lý]     [Table: Churn Risk (recency > 90 ngày)]
-  KH | Revenue | Freq       KH | Last Order | Days | Revenue
-  KH-00091 | 9.59 tỷ | 55  KH-00002 | 2025-01-06 | 503 | 3.5M
-
-[Bar: Pareto — Tích lũy % doanh thu theo số đại lý]
-   Annotation: "Top 20% (~160 DL) chiếm X% doanh thu"
-```
-
----
-
-### 📄 TRANG 5: Phân tích địa lý
-
-> [!IMPORTANT]
-> **Bất thường địa lý cần highlight trong dashboard:**
-> - Miền Bắc: 579 đại lý, 80.64 tỷ (73.7%)
-> - Miền Nam: **chỉ 4 đại lý** — rất bất thường cho thị trường lớn nhất VN
-> - 97 KH (12.2%) không có thông tin tỉnh thành
-
-**Layout:**
-```
-[Card] Miền Bắc: 80.6 tỷ (73.7%)   [Card] Miền Trung: 17.1 tỷ (15.7%)
-[Card] Miền Nam: 5.8 tỷ (5.3%)      [Card] Chưa xác định: 5.9 tỷ (5.4%)
-
-[Map/Treemap: Province → Revenue (màu gradient)]
-   Highlight: Hà Nội 39.49 tỷ (36% tổng doanh thu!)
-
-[Bar: Top 10 tỉnh]                  [Bar: YoY by Province (chỉ T1-T3)]
-  HN: 39.49ty | TH: 6.04ty          (chỉ tính được với tỉnh có data cả 2 năm)
-```
-
-**Insight bắt buộc cho trang này:**
-> Hà Nội chiếm 248/798 đại lý (31%) và 39.49/109.45 tỷ (36%) doanh thu → Rủi ro tập trung địa lý cực cao. Cần mở rộng sang các tỉnh/thành phố khác.
-
----
-
-### 📄 TRANG 6: Trạng thái vận hành (Pipeline)
-
-**Số liệu email_log thực tế:**
-- Tổng: 1,132 emails
-- READY_TO_INSERT: 1,132 (100%)
-- Không có FAILED → Pipeline hoạt động hoàn hảo
-
-**Layout:**
-```
-[Card] 1,132 emails xử lý   [Card] 1,132 đơn insert   [Card] 0 lỗi   [Card] 100% tỷ lệ thành công
-
-[Funnel: Emails → Extract → Validate → Insert]
-   1,132 → 1,132 → 1,132 → 1,132 (100% mỗi bước)
-
-[Line/Bar: Phân bố đơn hàng T3/2026 theo ngày (31 ngày)]
-   Từ fact_sales WHERE fiscal_year=2026 AND fiscal_month=3
-
-[Table: Thông tin kỹ thuật pipeline]
-   Nguồn: 1,132 file .eml + PDF đính kèm
-   Method: pdfplumber + RegEx
-   DB: PostgreSQL tnbike_db
-   Runtime: ~X phút (ghi vào đây)
-
-[Comparison: T3/2025 vs T3/2026]
-   Đơn: 447 → 1,132 (+153%)
-   Doanh thu: 18.58 tỷ → 40.80 tỷ (+119.6%)
-```
-
----
-
-## 8. ≥5 Insights có giá trị kinh doanh (theo format đề bài)
-
-### Insight 1 — T3 luôn là tháng đỉnh (2 năm liên tiếp)
-> **Phát hiện:** T3/2025 (18.58 tỷ) và T3/2026 (40.80 tỷ) đều là tháng cao nhất trong năm tương ứng. T3/2026 tăng **+119.6%** so với T3/2025 và gấp **1.93 lần** T1/2026 (40.80/21.14). Nhìn rộng hơn, Q1/2026 (81.33 tỷ) tăng **+189.2%** so với Q1/2025 (28.12 tỷ).
-> **Ý nghĩa:** Tháng 3 là chu kỳ cao điểm của TNBike, nhiều khả năng do đại lý ôm hàng trước mùa hè và dịp Quốc tế Lao động 1/5. Dữ liệu T3 là kỳ "bình thường mới" — không nên so sánh T1/T2 với T3 trực tiếp.
-> **Khuyến nghị:** Lên kế hoạch sản xuất tăng 30-40% vào tháng 2-3 hàng năm; đảm bảo tồn kho sẵn sàng cho đại lý đặt hàng sớm từ tháng 2.
-
-### Insight 2 — Concentration Risk: Hà Nội + 1 đại lý áp đảo
-> **Phát hiện:** KH-00091 (1 đại lý) có doanh thu 9.587 tỷ = **8.76% tổng doanh thu cả 6 tháng**. Hà Nội (248 đại lý) chiếm 39.49 tỷ = **36% tổng**. Top 5% đại lý chiếm ước tính >40% doanh thu.
-> **Ý nghĩa:** Rủi ro tập trung kép — theo địa lý và theo đại lý. Nếu KH-00091 ngừng hoạt động hoặc chuyển sang đối thủ, doanh thu tức thì giảm ~9%. Nếu thị trường Hà Nội bị ảnh hưởng, doanh thu giảm 36%.
-> **Khuyến nghị:** (1) Ký hợp đồng độc quyền/ưu đãi đặc biệt với top 10 đại lý. (2) Đặt mục tiêu phát triển đại lý miền Nam từ 4 lên 20 đại lý trong 2026.
-
-### Insight 3 — Miền Nam: Thị trường lớn, đại lý cực ít
-> **Phát hiện:** Miền Nam (TP.HCM + các tỉnh) chỉ có **4 đại lý** nhưng đạt 5.79 tỷ doanh thu — trung bình **1.45 tỷ/đại lý** (5.79/4), cao hơn nhiều so với mức trung bình **139 triệu/đại lý** của Miền Bắc (80.64 tỷ / 579 đại lý).
-> **Ý nghĩa:** Mỗi đại lý miền Nam hiệu quả gấp **~10.4 lần** so với đại lý miền Bắc (1,448M / 139M) — chứng tỏ tiềm năng thị trường miền Nam rất lớn nhưng đang bị khai thác rất ít.
-> **Khuyến nghị:** Đầu tư mạnh vào mở rộng mạng lưới đại lý miền Nam — mục tiêu 20-30 đại lý tại TP.HCM, Bình Dương, Đồng Nai trong 6 tháng tới.
-
-### Insight 4 — "Chua xep loai" chiếm 23% doanh thu
-> **Phát hiện:** 90/265 SKU (34%) chưa được map vào nhóm sản phẩm, tạo ra nhóm "Chưa phân loại" với doanh thu 25.28 tỷ (23% tổng). Đây là nhóm lớn thứ 2 sau CITYBIKE_P.
-> **Ý nghĩa:** Không thể phân tích chính xác cơ cấu sản phẩm vì gần 1/4 doanh thu không có nhãn danh mục. Có nguy cơ ra quyết định sai về portfolio sản phẩm.
-> **Khuyến nghị:** Ưu tiên map 90 SKU còn lại vào đúng product_line trước khi báo cáo cho ban lãnh đạo.
-
-### Insight 5 — Đại lý một lần (Single-Purchase Churn)
-> **Phát hiện:** Nhiều đại lý chỉ có đúng **1 đơn hàng** từ T1/2025 và không quay lại sau 500 ngày (ví dụ KH-00002, KH-00003, KH-00005...). Nhóm này đã "mất" hoàn toàn sau lần mua đầu tiên.
-> **Ý nghĩa:** Tỷ lệ giữ chân đại lý mới (first-purchase retention) có thể rất thấp. Chi phí tìm đại lý mới tốn kém hơn giữ chân đại lý cũ 5-7 lần trong B2B.
-> **Khuyến nghị:** Xây dựng chương trình onboarding 90 ngày cho đại lý mới: liên hệ sau đơn hàng đầu tiên, ưu đãi đơn hàng thứ 2, nhân viên kinh doanh phụ trách trực tiếp.
-
----
-
-## 9. Thứ tự thực hiện
-
-```
-BƯỚC 1 — SQL (25 phút)
-├── [BẮT BUỘC TRƯỚC] Chạy 5.4: UPDATE normalize color + refresh toàn bộ fact_sales
-│   (nếu không, fact_sales vẫn giữ color cũ "đen"/"Đen" — heatmap màu bị duplicate)
-├── Chạy 5.1: CREATE VIEW v_rfm_analysis
-├── Chạy 5.2: CREATE VIEW v_bcg_matrix
-└── Chạy 5.3: CREATE VIEW v_pipeline_status
-
-BƯỚC 2 — PowerBI kết nối (10 phút)
-├── Get Data → PostgreSQL → localhost / tnbike_db
-├── Import: fact_sales, customer, province, product, product_group, product_line,
-│           email_log, sales_order + 3 views vừa tạo
-└── Thiết lập Relationships (fact_sales là bảng trung tâm)
-
-BƯỚC 3 — Power Query cleanup (15 phút)
-├── Normalize color: Text.Proper([color])
-├── Thêm cột "group_display": if group_code = null then "Chưa phân loại" else group_name
-└── Tạo cột "period_label": "2025-T1", "2025-T2" ... "2026-T3"
-
-BƯỚC 4 — DAX Measures (30 phút)
-└── Tạo tất cả measures ở mục 6
-
-BƯỚC 5 — Build 6 trang (2-3 giờ)
-├── Trang 1: Executive Overview
-├── Trang 2: Time Analysis (6 điểm dữ liệu, chú thích rõ)
-├── Trang 3: Product (BCG + Drilldown + Heatmap màu)
-├── Trang 4: Dealer RFM (từ view v_rfm_analysis)
-├── Trang 5: Geographic (Treemap vì Map có thể khó với 63 tỉnh)
-└── Trang 6: Pipeline Operations
-
-BƯỚC 6 — Insights & Polish (1 giờ)
-├── Thêm text boxes với 5 insights format đề bài
-└── Chỉnh màu sắc, font, layout đồng nhất
-```
-
----
-
-## 10. Lưu ý quan trọng khi trình bày
-
-| Vấn đề thực tế | Cách xử lý trong Dashboard |
+| Vấn đề thực tế | Cách xử lý trong dashboard |
 |---|---|
-| Chỉ có 6 tháng data | Thêm annotation "Data range: T1-T3/2025 & T1-T3/2026" |
-| Thiếu T4-T12/2025 | Không vẽ line chart liên tục — dùng clustered bar chart |
-| 23% doanh thu "Chưa phân loại" | Highlight là data quality issue, không ẩn đi |
-| Miền Nam 4 đại lý | Đây là business insight quan trọng, không phải lỗi |
-| Hà Nội chiếm 36% | Highlight trong insight về concentration risk |
+| Chỉ có 6 tháng data | Ghi rõ `Data range: T1-T3/2025 & T1-T3/2026` |
+| Thiếu T4-T12/2025 | Không diễn giải như chuỗi tháng liên tục |
+| Chưa phân loại | Không ẩn đi, biến thành insight |
+| Geography unresolved | Giữ `Chưa xác định`, không bịa tỉnh |
+| BCG là internal proxy | Ghi annotation rõ |
 
 ---
 
-*Deadline: 28/05/2026 | Tool: Power BI Desktop | DB: PostgreSQL tnbike_db localhost*
-*Đã kiểm tra thực tế database ngày 24/05/2026*
+*Power BI Desktop | PostgreSQL tnbike_db localhost*
