@@ -27,10 +27,12 @@ DECLARE
     fk_name TEXT;
 BEGIN
     SELECT conname INTO fk_name
-    FROM pg_constraint
-    WHERE conrelid = 'tnbike.customer'::regclass
-      AND contype = 'f'
-      AND confrelid = 'tnbike.province_clean'::regclass;
+    FROM pg_constraint c
+    JOIN pg_class t1 ON c.conrelid = t1.oid
+    JOIN pg_class t2 ON c.confrelid = t2.oid
+    WHERE t1.relname = 'customer'
+      AND t2.relname = 'province_clean'
+      AND c.contype = 'f';
 
     IF fk_name IS NOT NULL THEN
         EXECUTE format(
