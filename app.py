@@ -1,5 +1,5 @@
 import streamlit as st
-from src.ai_business_assistant_accurate import AIBusinessAssistantSmart
+from src.business_assistant import AIBusinessAssistantSmart
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
