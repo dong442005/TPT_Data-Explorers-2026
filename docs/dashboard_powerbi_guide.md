@@ -371,72 +371,72 @@ LIMIT 10;
 
 ```dax
 // === MEASURES CƠ BẢN ===
-Total Revenue = SUM(fact_sales[line_total])
-Total Quantity = SUM(fact_sales[quantity])
-Total Orders = DISTINCTCOUNT(fact_sales[so_number])
-Active Dealers = DISTINCTCOUNT(fact_sales[customer_code])
-Avg Revenue per Order = DIVIDE([Total Revenue], [Total Orders])
-Avg Revenue per Dealer = DIVIDE([Total Revenue], [Active Dealers])
+Tổng Doanh Thu = SUM('tnbike fact_sales'[line_total])
+Tổng Sản Lượng = SUM('tnbike fact_sales'[quantity])
+Tổng Số Đơn = DISTINCTCOUNT('tnbike fact_sales'[so_number])
+Đại Lý Hoạt Động = DISTINCTCOUNT('tnbike fact_sales'[customer_code])
+DTBQ Mỗi Đơn = DIVIDE([Tổng Doanh Thu], [Tổng Số Đơn])
+DTBQ Mỗi Đại Lý = DIVIDE([Tổng Doanh Thu], [Đại Lý Hoạt Động])
 
 // === MoM (áp dụng được toàn bộ 6 điểm) ===
 // ⚠️ Lưu ý: MoM T1/2026 sẽ trả về BLANK vì không có data T12/2025 (gap T4-T12/2025).
 // Đây là hành vi đúng — không phải lỗi. Ghi chú trong dashboard tooltip.
-Revenue MoM % =
-VAR cur = [Total Revenue]
-VAR prev = CALCULATE([Total Revenue], DATEADD(fact_sales[order_date], -1, MONTH))
+% Tăng Trưởng DT MoM =
+VAR cur = [Tổng Doanh Thu]
+VAR prev = CALCULATE([Tổng Doanh Thu], DATEADD('tnbike fact_sales'[order_date], -1, MONTH))
 RETURN DIVIDE(cur - prev, ABS(prev))
 
 // === YoY — CHỈ CÓ THỂ SO SÁNH T1, T2, T3 ===
-Revenue YoY % =
-VAR cur = [Total Revenue]
-VAR same_last_year = CALCULATE([Total Revenue],
-    DATEADD(fact_sales[order_date], -1, YEAR))
+% Tăng Trưởng DT YoY =
+VAR cur = [Tổng Doanh Thu]
+VAR same_last_year = CALCULATE([Tổng Doanh Thu],
+    DATEADD('tnbike fact_sales'[order_date], -1, YEAR))
 RETURN DIVIDE(cur - same_last_year, ABS(same_last_year))
 
 // Q1 so sánh (Q1 = fiscal_quarter=1 = T1+T2+T3)
-Revenue Q1 2025 = CALCULATE([Total Revenue], fact_sales[fiscal_year]=2025, fact_sales[fiscal_quarter]=1)
-Revenue Q1 2026 = CALCULATE([Total Revenue], fact_sales[fiscal_year]=2026, fact_sales[fiscal_quarter]=1)
-Growth Q1 YoY = DIVIDE([Revenue Q1 2026] - [Revenue Q1 2025], [Revenue Q1 2025])
+Doanh Thu Q1 2025 = CALCULATE([Tổng Doanh Thu], 'tnbike fact_sales'[fiscal_year]=2025, 'tnbike fact_sales'[fiscal_quarter]=1)
+Doanh Thu Q1 2026 = CALCULATE([Tổng Doanh Thu], 'tnbike fact_sales'[fiscal_year]=2026, 'tnbike fact_sales'[fiscal_quarter]=1)
+Tăng Trưởng Q1 YoY = DIVIDE([Doanh Thu Q1 2026] - [Doanh Thu Q1 2025], [Doanh Thu Q1 2025])
 // Q1/2025 = 3.20+6.34+18.58 = 28.12 tỷ | Q1/2026 = 21.14+19.39+40.80 = 81.33 tỷ
 // Kết quả thực tế: (81.33-28.12)/28.12 = +189.2%
 
 // T3 (tháng cao điểm có data của cả 2 năm)
-Revenue T3 2025 = CALCULATE([Total Revenue], fact_sales[fiscal_year]=2025, fact_sales[fiscal_month]=3)
-Revenue T3 2026 = CALCULATE([Total Revenue], fact_sales[fiscal_year]=2026, fact_sales[fiscal_month]=3)
+Doanh Thu T3 2025 = CALCULATE([Tổng Doanh Thu], 'tnbike fact_sales'[fiscal_year]=2025, 'tnbike fact_sales'[fiscal_month]=3)
+Doanh Thu T3 2026 = CALCULATE([Tổng Doanh Thu], 'tnbike fact_sales'[fiscal_year]=2026, 'tnbike fact_sales'[fiscal_month]=3)
 // Kết quả thực tế T3: +119.6%
 
 // === PARETO — TOP 20% DEALERS ===
-Revenue Share Top 20pct =
-VAR top_n = ROUNDUP(COUNTROWS(VALUES(fact_sales[customer_code])) * 0.2, 0)
+Tỷ Trọng Doanh Thu Top 20% =
+VAR top_n = ROUNDUP(COUNTROWS(VALUES('tnbike fact_sales'[customer_code])) * 0.2, 0)
 VAR top_dealers = TOPN(top_n,
-    SUMMARIZE(ALL(fact_sales), fact_sales[customer_code], "r", [Total Revenue]),
+    SUMMARIZE(ALL('tnbike fact_sales'), 'tnbike fact_sales'[customer_code], "r", [Tổng Doanh Thu]),
     [r], DESC)
 VAR top_rev = SUMX(top_dealers, [r])
-RETURN DIVIDE(top_rev, CALCULATE([Total Revenue], ALL(fact_sales[customer_code])))
+RETURN DIVIDE(top_rev, CALCULATE([Tổng Doanh Thu], ALL('tnbike fact_sales'[customer_code])))
 // Để tính: top 160 dealers (20% của 798) chiếm bao nhiêu %
 
 // === CHURN SIGNAL ===
 // Lấy ngày cuối cùng trong data = 2026-03-31
-Churn Risk Dealers =
+Đại Lý Nguy Cơ Churn =
 CALCULATE(
-    DISTINCTCOUNT(fact_sales[customer_code]),
+    DISTINCTCOUNT('tnbike fact_sales'[customer_code]),
     FILTER(
-        VALUES(fact_sales[customer_code]),
-        CALCULATE(MAX(fact_sales[order_date])) < DATE(2026, 1, 1)
+        VALUES('tnbike fact_sales'[customer_code]),
+        CALCULATE(MAX('tnbike fact_sales'[order_date])) < DATE(2026, 1, 1)
     )
 )
 // Đại lý không mua trong 2026 (last order trong 2025) = churn signal
 
 // === KPI TARGETS Q2/2026 ===
 // Đặt mục tiêu dựa trên Q1/2026 + growth rate
-Target Revenue Q2 2026 = [Revenue Q1 2026] * 1.10   // +10% vs Q1/2026
-Target Qty Q2 2026 =
-CALCULATE([Total Quantity], fact_sales[fiscal_year]=2026, fact_sales[fiscal_quarter]=1) * 1.10
+Mục Tiêu DT Q2 2026 = [Doanh Thu Q1 2026] * 1.10   // +10% vs Q1/2026
+Mục Tiêu Sản Lượng Q2 2026 =
+CALCULATE([Tổng Sản Lượng], 'tnbike fact_sales'[fiscal_year]=2026, 'tnbike fact_sales'[fiscal_quarter]=1) * 1.10
 
 // === GROUP REVENUE SHARE ===
-Group Revenue Share =
-DIVIDE([Total Revenue],
-    CALCULATE([Total Revenue], ALL(fact_sales[group_code])))
+Tỷ Trọng Doanh Thu Nhóm =
+DIVIDE([Tổng Doanh Thu],
+    CALCULATE([Tổng Doanh Thu], ALL('tnbike fact_sales'[group_code])))
 ```
 
 ---
