@@ -1,0 +1,15 @@
+\begin{table}[htbp]
+\centering
+\caption{Feature Leakage Guardrails}
+\label{tab:feature_guardrails}
+\begin{tabular}{lll}
+\toprule
+\textbf{Category} & \textbf{Features / Mechanisms} & \textbf{Reason} \\
+\midrule
+Allowed Families & qty\_lag\_1, qty\_lag\_2, qty\_roll\_mean\_4w & Valid historical information \\
+Banned Features & Current period total\_quantity, total\_revenue & Direct Target Leakage \\
+Zero-sales panelization & Injecting 0-value rows for inactive SKUs & Ensures continuous time-series integrity \\
+Alignment checks & Identical lag shifting across Train/Future & Prevents forward-looking bias \\
+\bottomrule
+\end{tabular}
+\end{table}

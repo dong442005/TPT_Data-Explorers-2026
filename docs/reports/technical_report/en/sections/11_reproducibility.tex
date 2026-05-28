@@ -1,0 +1,18 @@
+\section{Reproducibility}
+Pipeline reproducibility ensures that historical validations can be re-run consistently. The Python environment is locked via the project's \texttt{requirements.txt}. All Machine Learning variants employ strict \texttt{random\_state} seed settings to eliminate stochastic divergence during re-training. Additionally, strict \texttt{.gitignore} policies ensure local metadata artifacts are not committed to the shared repository.
+
+Below are the standard operational execution commands, presented in strict ASCII syntax:
+
+\begin{itemize}
+    \item To execute a syntax check and pipeline simulation without saving outputs:
+\begin{lstlisting}
+python src/models/forecasting/run_end_to_end.py --dry-run
+\end{lstlisting}
+
+    \item To execute the full pipeline end-to-end, permitting ML model overwrites:
+\begin{lstlisting}
+python src/models/forecasting/run_end_to_end.py \
+    --allow-modeling --allow-overwrite
+\end{lstlisting}
+\end{itemize}
+\FloatBarrier

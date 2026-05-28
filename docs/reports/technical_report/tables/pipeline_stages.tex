@@ -1,0 +1,18 @@
+\begin{table}[hbt!]
+\centering
+\caption{Pipeline Stages and Scripts}
+\label{tab:pipeline_stages}
+\begin{tabular}{@{} l l l @{}}
+\toprule
+\textbf{Stage} & \textbf{Component} & \textbf{Primary Scripts} \\
+\midrule
+1 & ETL Ingestion & \texttt{extract\_validate.py}, \texttt{normalize.py} \\
+2 & DB Processing & \texttt{patches/*.sql}, \texttt{views/*.sql} \\
+3 & Reconciliation & \texttt{phase1c\_audit\_reconcile.py} \\
+4 & Feature Store & \texttt{build\_phase2a\_features.py} \\
+5 & Track 1 Models & \texttt{phase3b\_core\_baselines.py}, \texttt{phase3c\_ml\_baseline.py} \\
+6 & Track 2 & \texttt{phase3f\_color\_forecast.py} \\
+7 & Track 3 & \texttt{phase3g\_track3\_dealer\_activity.py} \\
+\bottomrule
+\end{tabular}
+\end{table}

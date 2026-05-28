@@ -1,0 +1,18 @@
+\begin{table}[H]
+\centering
+\small
+\caption{Feature Engineering Guardrails}
+\label{tab:guardrails}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llll}
+\toprule
+\textbf{Feature Family} & \textbf{Alias} & \textbf{Rule} & \textbf{Reason} \\
+\midrule
+Zero-sales Panel & is-zero-sales & Mandatory & Ensures continuous time-series \\
+Gap-crossing Lags & qty-lag-1 & Restricted & Prevents signal leakage \\
+Current Price & current-price & Banned & Causes forward-looking bias \\
+Schema Alignment & is-aligned & Mandatory & Schema must match exactly \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

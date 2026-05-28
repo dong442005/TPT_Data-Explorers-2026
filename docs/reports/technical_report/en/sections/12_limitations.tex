@@ -1,0 +1,9 @@
+\section{Limitations and Future Work}
+While providing a stable operational baseline, the system carries fundamental technical limitations that dictate clear avenues for future enhancement:
+\begin{itemize}
+    \item \textbf{Short History}: The absence of 9 core months of data in 2025 severely restricts cyclical analysis, requiring additional real historical data or carefully documented scenario assumptions in future iterations.
+    \item \textbf{March Shock}: The sudden demand surge may incite overfitting phenomena in short-term forecasting if tree weights are not heavily regularized.
+    \item \textbf{Cold-start Problem}: Newly onboarded dealers lack sufficient transactional history, inhibiting the generation of meaningful RFM behavioral scores.
+    \item \textbf{Probability Calibration}: The Track 3 Classifier currently emits uncalibrated probabilities. Integrating Isotonic Regression or Platt Scaling is necessary to improve churn risk reliability.
+\end{itemize}
+\FloatBarrier

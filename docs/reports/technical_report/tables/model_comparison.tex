@@ -1,0 +1,23 @@
+\begin{table}[hbt!]
+\centering
+\caption{Model Comparison Metrics (Overall Segment)}
+\label{tab:model_comparison}
+\begin{tabular}{@{} lllll @{}}
+\toprule
+\textbf{Model} & \textbf{MAE} & \textbf{RMSE} & \textbf{WMAPE} & \textbf{Bias Ratio} \\
+\midrule
+LightGBM\_monthly\_minimal\_features & 61.35 & 116.83 & 0.4744 & -0.1653 \\
+XGBoost\_monthly\_minimal\_features & 64.54 & 107.33 & 0.4990 & 0.0178 \\
+CatBoost\_monthly\_minimal\_features & 55.48 & 97.88 & 0.4290 & -0.0036 \\
+LightGBM\_monthly\_extended\_features & 67.44 & 124.95 & 0.5215 & -0.3801 \\
+XGBoost\_monthly\_extended\_features & 62.28 & 105.84 & 0.4816 & -0.2373 \\
+CatBoost\_monthly\_extended\_features & 59.27 & 108.35 & 0.4583 & -0.2863 \\
+LightGBM\_weekly\_minimal\_features & 31.18 & 49.16 & 0.9460 & 0.3621 \\
+XGBoost\_weekly\_minimal\_features & 29.41 & 48.62 & 0.8923 & 0.2648 \\
+CatBoost\_weekly\_minimal\_features & 31.08 & 52.62 & 0.9431 & 0.2770 \\
+LightGBM\_weekly\_extended\_features & 29.28 & 47.74 & 0.8884 & 0.2409 \\
+XGBoost\_weekly\_extended\_features & 29.17 & 48.12 & 0.8850 & 0.2616 \\
+CatBoost\_weekly\_extended\_features & 29.33 & 49.38 & 0.8901 & 0.2530 \\
+\bottomrule
+\end{tabular}
+\end{table}

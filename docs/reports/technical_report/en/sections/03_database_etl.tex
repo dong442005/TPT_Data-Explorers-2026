@@ -1,0 +1,7 @@
+\section{Database and ETL Pipeline}
+Raw data processing is split into historical seeding and real-time ingestion protocols. Table \ref{tab:pipeline} lists the primary scripts orchestrating these operations and their specific roles within the ecosystem.
+
+\input{../tables/pipeline_en.tex}
+
+Manual Data Quality Patches (SQL) addressed known color and geographic inconsistencies. For example, harmonizing misspelled color variants prevented the artificial splintering of a single product's demand signal into multiple disjointed time-series.
+\FloatBarrier

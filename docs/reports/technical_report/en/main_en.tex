@@ -1,0 +1,74 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage{geometry}
+\geometry{a4paper, margin=1in}
+\usepackage{fontspec}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{setspace}
+\usepackage{caption}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{placeins}
+\usepackage{listings}
+
+\lstset{
+    basicstyle=\ttfamily,
+    breaklines=true,
+    columns=fullflexible,
+    keepspaces=true,
+    upquote=true,
+    literate={-}{-}1
+}
+
+% APA-inspired settings
+\setstretch{1.25}
+\setlength{\parindent}{0.5in}
+
+% Font Policy: Times New Roman for body, serif for title
+\setmainfont{Times New Roman}
+\setsansfont{Times New Roman}
+
+\title{Technical Report \\ \large TPT Data Explorers 2026}
+\author{Data Explorers Team}
+\date{\today}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    \vspace*{2in}
+    {\Huge \bfseries Technical Report \par}
+    \vspace{0.5in}
+    {\Large \bfseries TPT Data Explorers 2026 \par}
+    \vspace{1.5in}
+    {\large Data Explorers Team \par}
+    \vspace{0.5in}
+    {\large \today \par}
+    \vfill
+\end{titlepage}
+
+\newpage
+\input{sections/00_abstract.tex}
+
+\newpage
+\tableofcontents
+\newpage
+
+\input{sections/01_intro.tex}
+\input{sections/02_architecture.tex}
+\input{sections/03_database_etl.tex}
+\input{sections/04_data_quality.tex}
+\input{sections/05_features.tex}
+\input{sections/06_strategy.tex}
+\input{sections/07_results.tex}
+\input{sections/08_track2.tex}
+\input{sections/09_track3.tex}
+\input{sections/10_deliverables.tex}
+\input{sections/11_reproducibility.tex}
+\input{sections/12_limitations.tex}
+
+\end{document}

@@ -1,0 +1,14 @@
+\begin{table}[htbp]
+\centering
+\caption{System Command References}
+\label{tab:command_reference}
+\begin{tabular}{ll}
+\toprule
+\textbf{Task} & \textbf{Command} \\
+\midrule
+Dry-run Pipeline & python src/models/forecasting/run\_end\_to\_end.py --dry-run \\
+Full E2E Local & python src/models/forecasting/run\_end\_to\_end.py --allow-modeling \\
+Build Report & powershell -ExecutionPolicy Bypass -File build\_report.ps1 \\
+\bottomrule
+\end{tabular}
+\end{table}
