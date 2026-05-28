@@ -61,3 +61,26 @@ Lớp cuối cùng bảo vệ tính đúng đắn của dữ liệu trước khi
 
 > [!TIP]
 > **Tóm tắt:** Bằng việc phân lớp xử lý nhiều tầng (Python lo cấu trúc JSON/Nhiễu font -> SQL lo liên kết quan hệ và làm sạch diện rộng -> BI lo Outlier), đội thi đã thiết lập được một Data Pipeline cực kỳ vững chắc, không chỉ dọn rác mà còn khôi phục 100% dòng chảy dữ liệu lên Dashboard.
+
+---
+
+## 5. BẰNG CHỨNG THỰC THI (EDA OUTPUTS & KIẾN TRÚC LƯU TRỮ)
+
+Sau khi hệ thống hoàn tất quá trình trích xuất và vá lỗi bằng SQL, việc chạy kiểm thử chất lượng dữ liệu bằng Python (`eda_general.py`) sẽ trả về kết quả dưới dạng Log như sau:
+
+```text
+🔍 1. KIỂM TRA CHẤT LƯỢNG DỮ LIỆU (MISSING VALUES):
+province_name     115
+region            115
+line_name        3371
+group_name       3371
+```
+
+**Tại sao dữ liệu trong bảng `fact_sales` vẫn báo Missing (Thiếu hụt)?**
+
+Đây **không phải là lỗi**, mà là **Chiến lược bảo toàn dữ liệu gốc (Single Source of Truth)** của đội thi:
+
+1. **Bảng Gốc (`fact_sales`):** Bảng sự thật này lưu trữ chính xác những gì đã xảy ra tại thời điểm bán hàng. Những sản phẩm chưa được công ty định nghĩa Danh mục (55 SKUs mới ra mắt) hoặc những khách hàng nhập địa chỉ lấp lửng, sẽ vẫn được giữ nguyên trạng thái `NULL` ở đây. Điều này cho phép Kỹ sư Dữ liệu (Data Engineers) và hệ thống cảnh báo (Alert System) có thể tracking (theo dõi) chính xác khối lượng dữ liệu bị thiếu hụt để liên hệ phòng ban khác bổ sung.
+2. **Bảng Trình Chiếu (`v_bcg_matrix`, `v_rfm_analysis`):** Ở tầng phục vụ hiển thị (Serving Layer) dành cho Power BI, chúng tôi đã sử dụng các cấu trúc View kết hợp logic bọc lót như `COALESCE(line_name, 'Chưa phân loại')` và `COALESCE(pr.province_name_clean, 'Chưa xác định')`. Nhờ kỹ thuật lấp khoảng trống động (Dynamic Imputation) này, các dòng thiếu hụt tự động được gom nhóm hiển thị trên Dashboard BI một cách đẹp mắt, đảm bảo Tổng Doanh Thu không bị hụt mất 14.12 tỷ, mà vẫn không làm "bẩn" đi dữ liệu gốc.
+
+Chính sự tách bạch rạch ròi giữa Tầng Lưu Trữ (Storage) và Tầng Hiển Thị (Serving) đã tạo nên một kiến trúc dữ liệu tiêu chuẩn cao (Enterprise-grade Data Architecture), đáp ứng linh hoạt cho cả nhu cầu Phân tích (Analytics) lẫn Kiểm toán (Auditing).

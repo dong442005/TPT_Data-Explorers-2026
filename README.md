@@ -217,12 +217,14 @@ Tiếp theo, tạo file `.env` từ file mẫu `.env.example` và điền cấu 
 cp .env.example .env
 ```
 
-### Bước 3: Chạy ETL Pipeline (Trích xuất Hóa đơn T3/2026)
-Đặt các hóa đơn `.eml` vào thư mục `data/raw/emails/`. Chạy:
+### Bước 3: Chạy ETL Pipeline & Phân Tích Khám Phá (EDA)
+Đặt các hóa đơn `.eml` vào thư mục `data/raw/emails/`. Chạy tuần tự các lệnh sau:
 ```bash
-python src/extract_validate.py  # [E] Extract
-python src/normalize.py         # [T] Transform
-python src/load_to_database.py  # [L] Load
+python src/extract_validate.py     # 1. [E] Extract từ PDF/Email
+python src/normalize.py            # 2. [T] Transform (Chuẩn hóa Regex bằng Python)
+python src/eda/eda_data_quality.py # 3. Khám bệnh Dữ liệu (Phơi bày lỗi để chuẩn bị vá SQL)
+python src/load_to_database.py     # 4. [L] Load dữ liệu vào CSDL PostgreSQL
+python src/eda/eda_general.py      # 5. EDA Báo cáo Kinh doanh (Sau khi nạp DB)
 ```
 
 ### Bước 4: Chạy SQL Patches làm sạch số liệu

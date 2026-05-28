@@ -1,4 +1,7 @@
 import os
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 import re
 import json
 import email

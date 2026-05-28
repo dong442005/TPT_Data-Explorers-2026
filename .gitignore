@@ -1,4 +1,4 @@
-# Python
+# Python Environment
 __pycache__/
 *.py[cod]
 *$py.class
@@ -7,19 +7,25 @@ venv/
 ENV/
 env/
 .env
+.ipynb_checkpoints/
 
 # Database config containing credentials
 config/db_config.json
+tnbike_schema.json
 
-# Data files (keep raw/processed folder structure but ignore contents)
+# Data files (keep folder structure but ignore large files)
 data/raw/*
 !data/raw/.gitkeep
 data/processed/*
 !data/processed/.gitkeep
+data/interim/
+data/features/
+temp_pdf/
 
-# Model weights
+# Models (keep folder structure but ignore large binaries)
 models/*
 !models/.gitkeep
+catboost_info/
 
 # BI Local templates
 bi/*.pbix.user
@@ -28,32 +34,9 @@ bi/*.pbix.user
 .vscode/
 .idea/
 .gemini/
+.DS_Store
 
-# CSV and temp files
+# Outputs & Auto-generated cache/media
 *.csv
-temp_pdf/
-
-
-# Python
-__pycache__/
-*.py[cod]
-.ipynb_checkpoints/
-.env
-
-# Models
-catboost_info/
-models/*.pkl
-models/*.joblib
-
-# Data
-data/raw/*.csv
-data/interim/
-data/features/
-data/processed/
-
-# Outputs
-outputs/audit/runs/*.json
-
-# Auto-generated cache and media
 *.png
-tnbike_schema.json
+outputs/audit/runs/*.json
