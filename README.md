@@ -233,3 +233,106 @@ git push -u origin feature/ten-nhiem-vu
 | [`docs/dashboard_powerbi_guide.md`](docs/dashboard_powerbi_guide.md) | Hướng dẫn chi tiết 6 trang Dashboard, DAX Measures tiếng Việt, SQL Views |
 | [`docs/rfm_scoring_analysis.md`](docs/rfm_scoring_analysis.md) | Thuyết minh đầy đủ phương pháp RFM B2B, ngưỡng chấm điểm, 8 phân khúc |
 | [`docs/product_line_mapping_analysis.md`](docs/product_line_mapping_analysis.md) | Phân tích 55 SKU chưa phân loại (12.9% doanh thu) |
+
+
+# Thong Nhat Bike - Data Explorers Vòng 2
+
+Repository chứa toàn bộ mã nguồn, dữ liệu và báo cáo phân tích cho cuộc thi **Data Explorers - Vòng 2** (Track 1, 2, 3), xây dựng hệ thống dự báo nhu cầu sản xuất và bán hàng cho chuỗi xe đạp Thống Nhất (Q2/2026).
+
+---
+
+## 1. Tổng Quan Dự Án (Project Overview)
+Dự án được xây dựng theo một kiến trúc **End-to-End Data Pipeline**, đảm bảo nguyên tắc:
+1. **Dữ liệu thô (Raw Data)** là bất biến (immutable), nằm tại `data/raw/`.
+2. **Luồng dữ liệu một chiều (One-way Pipeline)**: Đầu ra của Phase trước là đầu vào của Phase sau.
+3. **Reproducibility (Khả năng tái tạo)**: Toàn bộ quá trình từ raw data đến kết quả dự báo cuối cùng có thể được chạy lại tự động chỉ bằng 1 câu lệnh.
+
+### Các Track (Bài toán) được giải quyết:
+- **Track 1:** Dự báo nhu cầu bán hàng cho từng dòng xe (SKU) theo tháng, sử dụng mô hình Machine Learning (LightGBM/XGBoost/CatBoost) kết hợp các Baseline kinh điển.
+- **Track 2:** Phân bổ dự báo SKU xuống mức độ Màu sắc (Color/Variant) nhằm tối ưu quy trình sơn tĩnh điện, đồng thời phát hiện rủi ro tồn kho (Slow-moving inventory).
+- **Track 3:** Phân tích hành vi đại lý (Dealer Analytics) qua mô hình RFM Scoring, dự báo xác suất phát sinh đơn hàng (Churn Risk) và đưa ra các đề xuất hành động tiếp thị cụ thể.
+
+---
+
+## 2. Luồng Thực Thi (End-to-End Pipeline)
+
+Bộ máy thực thi được đặt trong thư mục `implement/` và điều phối bởi `run_end_to_end.py`. Quá trình gồm 3 giai đoạn:
+
+* **Phase 1: Data Foundation (`phase1c`)**
+  * Làm sạch và chuẩn hóa danh mục sản phẩm (Product Master Data).
+  * Gom nhóm và tổng hợp doanh thu theo các chiều thời gian (Tháng/Tuần).
+* **Phase 2: Feature Store (`phase2a`)**
+  * Thiết kế đặc trưng (Feature Engineering): Lag 1M-12M, Động lượng (Momentum), Mã hóa chu kỳ (Cyclical Time).
+  * Căn chỉnh dữ liệu (Alignment) để ghép nối chuẩn xác giữa tập Huấn luyện (Train) và tập Tương lai (Future).
+* **Phase 3: Modeling & Forecasting (`phase3`)**
+  * Data Audit tự động.
+  * Tính toán Core Baselines và Group-Share.
+  * Huấn luyện mô hình Machine Learning.
+  * Phân bổ Track 2 (Color Forecast).
+  * Chấm điểm và phân loại đại lý Track 3.
+
+---
+
+## 3. Hướng Dẫn Sử Dụng (How to Run)
+
+Repository sử dụng 1 file điều phối duy nhất. Đứng tại thư mục gốc của project, mở terminal/powershell và chạy:
+
+```bash
+# 1. Chạy thử nghiệm (Dry-run) - Kiểm tra cấu trúc pipeline và file input mà không chạy script
+python implement/run_end_to_end.py --dry-run
+
+# 2. Chạy toàn bộ Pipeline (End-to-End) - Đòi hỏi quyền overwrite output
+python implement/run_end_to_end.py --allow-modeling --allow-overwrite
+```
+
+**Lưu ý:** Flag `--allow-overwrite` là cơ chế an toàn để ngăn việc vô tình ghi đè (overwrite) các kết quả dự báo đang tốt trong thư mục `outputs/modeling/`.
+
+---
+
+## 4. Đầu Ra (Outputs)
+
+Toàn bộ báo cáo và kết quả được lưu minh bạch tại thư mục `outputs/`:
+
+* **`outputs/modeling/`**: (Single Source of Truth cho các Track)
+  * `phase3_group_share_forecast_q2_2026.csv` (Dự báo an toàn Track 1)
+  * `phase3c_ml_forecast_q2_2026.csv` (Dự báo Machine Learning Track 1)
+  * `phase3_color_forecast_q2_2026.csv` (Track 2)
+  * `phase3_dealer_priority_ranking_q2_2026.csv` (Track 3)
+  * Cùng các file `.md` báo cáo tổng kết (Executive Summaries) cho từng Track.
+* **`outputs/audit/`**:
+  * Các báo cáo kiểm định chất lượng (Data Audit), theo dõi rò rỉ dữ liệu (Leakage check).
+
+---
+
+## 5. Cấu trúc Cây Thư mục (File Tree Structure)
+
+Cấu trúc thư mục được dọn dẹp gọn gàng, chia tách rõ ràng trách nhiệm của từng component:
+
+```text
+Data_Explorers_Vong_2/
+├── archive/                     # Nơi lưu trữ các scripts và artifacts cũ, nháp
+│   ├── debug_notes/
+│   ├── debug_scripts/
+│   └── legacy_scripts/
+├── data/                        # Quản lý vòng đời dữ liệu
+│   ├── features/                # File ma trận đặc trưng (.parquet) cho ML
+│   ├── interim/                 # Dữ liệu sạch trung gian
+│   ├── metadata/                # Bảng tham chiếu (Product Map, Feature Registry)
+│   └── raw/                     # [BẤT BIẾN] Chứa các CSV gốc từ Data Explorers
+├── implement/                   # Mã nguồn thực thi Pipeline
+│   ├── phase1_data_foundation/  # Scripts gom nhóm, làm sạch
+│   ├── phase2_feature_store/    # Scripts tạo Lag, RFM, Alignment
+│   ├── phase3_modeling/         # Scripts dự báo Track 1, 2, 3
+│   ├── shared/                  # Config, utils dùng chung
+│   └── run_end_to_end.py        # Pipeline Orchestrator (Script điều phối)
+├── outputs/                     # Thành phẩm cuối cùng
+│   ├── audit/                   # Báo cáo kiểm định chất lượng dữ liệu
+│   └── modeling/                # Kết quả dự báo (CSVs) và báo cáo kinh doanh (MDs)
+├── .gitignore                   # Thiết lập chặn các file pycache, env, catboost_info
+├── requirements.txt             # Danh sách thư viện Python (Dependencies)
+├── IMPLEMENTATION_BLUEPRINT.md  # Kế hoạch thiết kế hệ thống gốc
+├── REPO_ARCHITECTURE.md         # Giải thích chi tiết Data Lineage và Cấu trúc
+└── README.md                    # (Bạn đang đọc file này)
+```
+
+> **Tham khảo thêm:** Để tìm hiểu sâu hơn về luồng chuyển hóa dữ liệu (Data Lineage) giữa các file, vui lòng đọc [REPO_ARCHITECTURE.md](REPO_ARCHITECTURE.md).

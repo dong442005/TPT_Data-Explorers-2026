@@ -33,3 +33,23 @@ bi/*.pbix.user
 *.csv
 temp_pdf/
 
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.env
+
+# Models
+catboost_info/
+models/*.pkl
+models/*.joblib
+
+# Data
+data/raw/*.csv
+data/interim/
+data/features/
+data/processed/
+
+# Outputs
+outputs/audit/runs/*.json
