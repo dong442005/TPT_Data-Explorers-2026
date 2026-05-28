@@ -235,28 +235,26 @@ git push -u origin feature/ten-nhiem-vu
 | [`docs/product_line_mapping_analysis.md`](docs/product_line_mapping_analysis.md) | Phân tích 55 SKU chưa phân loại (12.9% doanh thu) |
 
 
-# Thong Nhat Bike - Data Explorers Vòng 2
+## 8. Hệ Thống Dự Báo Machine Learning (Track 1, 2, 3)
 
-Repository chứa toàn bộ mã nguồn, dữ liệu và báo cáo phân tích cho cuộc thi **Data Explorers - Vòng 2** (Track 1, 2, 3), xây dựng hệ thống dự báo nhu cầu sản xuất và bán hàng cho chuỗi xe đạp Thống Nhất (Q2/2026).
+Phần này chứa toàn bộ mã nguồn, dữ liệu và báo cáo phân tích xây dựng hệ thống dự báo nhu cầu sản xuất và bán hàng cho chuỗi xe đạp Thống Nhất (Q2/2026).
 
----
-
-## 1. Tổng Quan Dự Án (Project Overview)
+### 8.1. Tổng Quan Dự Án (Project Overview)
 Dự án được xây dựng theo một kiến trúc **End-to-End Data Pipeline**, đảm bảo nguyên tắc:
 1. **Dữ liệu thô (Raw Data)** là bất biến (immutable), nằm tại `data/raw/`.
 2. **Luồng dữ liệu một chiều (One-way Pipeline)**: Đầu ra của Phase trước là đầu vào của Phase sau.
 3. **Reproducibility (Khả năng tái tạo)**: Toàn bộ quá trình từ raw data đến kết quả dự báo cuối cùng có thể được chạy lại tự động chỉ bằng 1 câu lệnh.
 
-### Các Track (Bài toán) được giải quyết:
+**Các Track (Bài toán) được giải quyết:**
 - **Track 1:** Dự báo nhu cầu bán hàng cho từng dòng xe (SKU) theo tháng, sử dụng mô hình Machine Learning (LightGBM/XGBoost/CatBoost) kết hợp các Baseline kinh điển.
 - **Track 2:** Phân bổ dự báo SKU xuống mức độ Màu sắc (Color/Variant) nhằm tối ưu quy trình sơn tĩnh điện, đồng thời phát hiện rủi ro tồn kho (Slow-moving inventory).
 - **Track 3:** Phân tích hành vi đại lý (Dealer Analytics) qua mô hình RFM Scoring, dự báo xác suất phát sinh đơn hàng (Churn Risk) và đưa ra các đề xuất hành động tiếp thị cụ thể.
 
 ---
 
-## 2. Luồng Thực Thi (End-to-End Pipeline)
+### 8.2. Luồng Thực Thi (End-to-End Pipeline)
 
-Bộ máy thực thi được đặt trong thư mục `implement/` và điều phối bởi `run_end_to_end.py`. Quá trình gồm 3 giai đoạn:
+Bộ máy thực thi được đặt trong thư mục `src/models/forecasting/` và điều phối bởi `run_end_to_end.py`. Quá trình gồm 3 giai đoạn:
 
 * **Phase 1: Data Foundation (`phase1c`)**
   * Làm sạch và chuẩn hóa danh mục sản phẩm (Product Master Data).
@@ -271,9 +269,7 @@ Bộ máy thực thi được đặt trong thư mục `implement/` và điều p
   * Phân bổ Track 2 (Color Forecast).
   * Chấm điểm và phân loại đại lý Track 3.
 
----
-
-## 3. Hướng Dẫn Sử Dụng (How to Run)
+### 8.3. Hướng Dẫn Chạy Pipeline
 
 Repository sử dụng 1 file điều phối duy nhất. Đứng tại thư mục gốc của project, mở terminal/powershell và chạy:
 
@@ -287,24 +283,35 @@ python src/models/forecasting/run_end_to_end.py --allow-modeling --allow-overwri
 
 **Lưu ý:** Cờ `--allow-modeling` cho phép chạy quá trình huấn luyện, và cờ `--allow-overwrite` là cơ chế an toàn để ngăn vô tình ghi đè kết quả dự báo đang có tại `outputs/modeling/`.
 
----
+### 8.4. Đầu Ra (Outputs) & Báo Cáo Kỹ Thuật
 
-## 4. Đầu Ra (Outputs)
+Toàn bộ kết quả chạy tự động được lưu minh bạch tại thư mục `outputs/`:
+* **`outputs/modeling/`**: (Single Source of Truth) Các CSV dự báo (Group-Share, ML, Color, Dealer Ranking).
+* **`outputs/audit/`**: Các báo cáo kiểm định chất lượng (Data Audit), rò rỉ dữ liệu.
 
-Toàn bộ báo cáo và kết quả được lưu minh bạch tại thư mục `outputs/`:
-
-* **`outputs/modeling/`**: (Single Source of Truth cho các Track)
-  * `phase3_group_share_forecast_q2_2026.csv` (Dự báo an toàn Track 1)
-  * `phase3c_ml_forecast_q2_2026.csv` (Dự báo Machine Learning Track 1)
-  * `phase3_color_forecast_q2_2026.csv` (Track 2)
-  * `phase3_dealer_priority_ranking_q2_2026.csv` (Track 3)
-  * Cùng các file `.md` báo cáo tổng kết (Executive Summaries) cho từng Track.
-* **`outputs/audit/`**:
-  * Các báo cáo kiểm định chất lượng (Data Audit), theo dõi rò rỉ dữ liệu (Leakage check).
+> [!IMPORTANT]
+> **Technical Report (Báo Cáo Kỹ Thuật Final)**
+> Bản PDF trình bày chi tiết về phương pháp luận, thuật toán, cảnh báo rò rỉ dữ liệu, và kết quả đánh giá (bằng Tiếng Anh) đã được biên dịch tự động qua LaTeX và lưu tại:
+> 📄 [`docs/reports/technical_report/technical_report_en.pdf`](docs/reports/technical_report/technical_report_en.pdf)
 
 ---
 
-## 5. Cấu trúc Cây Thư mục (File Tree Structure)
+## 9. Trợ Lý Kinh Doanh AI (LLM Chatbot)
+
+Dự án có tích hợp một ứng dụng Chatbot AI đóng vai trò như một **Trợ lý Phân tích Dữ liệu (Data Query Engine)** dành cho cấp quản lý. Thay vì viết SQL phức tạp, người dùng có thể đặt câu hỏi bằng ngôn ngữ tự nhiên (Tiếng Việt) và AI sẽ tự động truy xuất cơ sở dữ liệu để trả lời.
+
+### Các File Thành Phần
+- `app.py`: Chứa giao diện người dùng (Frontend) được xây dựng bằng **Streamlit**, cung cấp giao diện chat tương tác.
+- `src/business_assistant.py`: Lõi xử lý LLM (Backend) - phụ trách biên dịch câu hỏi tự nhiên thành truy vấn SQL chuẩn xác, thực thi trên PostgreSQL và tóm tắt kết quả.
+
+### Hướng Dẫn Chạy Chatbot
+Bạn cần đảm bảo database `tnbike_db` đang bật và đã cài đặt đủ thư viện (vd: `streamlit`, thư viện LLM liên quan nếu có), sau đó chạy lệnh:
+```bash
+streamlit run app.py
+```
+Giao diện Chatbot sẽ tự động mở ra trên trình duyệt ở địa chỉ `http://localhost:8501`.
+
+### 8.5. Cấu trúc Cây Thư mục (Machine Learning)
 
 Cấu trúc thư mục được dọn dẹp gọn gàng, chia tách rõ ràng trách nhiệm của từng component:
 
