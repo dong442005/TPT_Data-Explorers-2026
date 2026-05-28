@@ -30,26 +30,38 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s: %(message)s')
 def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
-def get_rfm_segment(r, f, m, r_p33, r_p66, f_p33, f_p66, m_p33, m_p66):
-    # Recency score: lower is better. 3 = recent, 1 = old
-    r_score = 3 if r <= r_p33 else (2 if r <= r_p66 else 1)
-    # Frequency score: higher is better
-    f_score = 3 if f >= f_p66 else (2 if f >= f_p33 else 1)
-    # Monetary score: higher is better
-    m_score = 3 if m >= m_p66 else (2 if m >= m_p33 else 1)
+def get_rfm_segment(r, f, m):
+    # R Score: Dựa trên chu kỳ B2B
+    if r <= 30: r_score = 5
+    elif r <= 60: r_score = 4
+    elif r <= 90: r_score = 3
+    elif r <= 180: r_score = 2
+    else: r_score = 1
     
-    fm_score = round((f_score + m_score)/2)
+    # F Score: Dựa trên phân bố B2B 6 tháng
+    if f >= 10: f_score = 5
+    elif f >= 6: f_score = 4
+    elif f >= 3: f_score = 3
+    elif f >= 2: f_score = 2
+    else: f_score = 1
     
-    if r_score == 3 and fm_score == 3: return "Champions"
-    if r_score == 3 and fm_score == 2: return "Potential"
-    if r_score == 3 and fm_score == 1: return "New"
-    if r_score == 2 and fm_score == 3: return "Loyal"
-    if r_score == 2 and fm_score == 2: return "Potential"
-    if r_score == 2 and fm_score == 1: return "Hibernating"
-    if r_score == 1 and fm_score == 3: return "Big Spender"
-    if r_score == 1 and fm_score == 2: return "At Risk"
-    if r_score == 1 and fm_score == 1: return "Lost"
-    return "Unknown/Other"
+    # M Score: Dựa trên doanh thu thực tế
+    if m >= 1000000000: m_score = 5
+    elif m >= 300000000: m_score = 4
+    elif m >= 100000000: m_score = 3
+    elif m >= 30000000: m_score = 2
+    else: m_score = 1
+    
+    # Logic phân loại từ v_rfm_analysis
+    if r_score >= 4 and f_score >= 4 and m_score >= 4: return 'Champions'
+    if r_score >= 4 and f_score >= 3 and m_score >= 3: return 'Loyal'
+    if r_score >= 3 and f_score <= 2 and m_score >= 4: return 'Big Spender'
+    if r_score >= 3 and f_score >= 2 and m_score >= 2: return 'Potential'
+    if r_score >= 4 and f_score == 1 and m_score <= 3: return 'New'
+    if r_score <= 2 and f_score >= 3 and m_score >= 3: return 'At Risk'
+    if r_score <= 2 and (f_score >= 2 or m_score >= 2): return 'Hibernating'
+    
+    return 'Lost'
 
 def run_track3():
     np.random.seed(42)
@@ -143,13 +155,7 @@ def run_track3():
         snap = snap.merge(first_order, on='customer_code', how='left')
         snap['is_new_dealer'] = ((c_date - snap['first_order_date']).dt.days <= 30).astype(int)
         
-        # RFM percentiles for segment
-        active_snap = snap[snap['recency_days'] <= 365] # compute quantiles on active-ish base
-        r_p33, r_p66 = active_snap['recency_days'].quantile([0.33, 0.66]).fillna(0).values if len(active_snap)>0 else (0,0)
-        f_p33, f_p66 = active_snap['frequency'].quantile([0.33, 0.66]).fillna(0).values if len(active_snap)>0 else (0,0)
-        m_p33, m_p66 = active_snap['monetary'].quantile([0.33, 0.66]).fillna(0).values if len(active_snap)>0 else (0,0)
-        
-        snap['rfm_segment'] = snap.apply(lambda r: get_rfm_segment(r['recency_days'], r['frequency'], r['monetary'], r_p33, r_p66, f_p33, f_p66, m_p33, m_p66), axis=1)
+        snap['rfm_segment'] = snap.apply(lambda r: get_rfm_segment(r['recency_days'], r['frequency'], r['monetary']), axis=1)
         
         # Momentum features
         d_recent_30d = past_data[past_data['order_date'] > c_date - pd.Timedelta(days=30)]
