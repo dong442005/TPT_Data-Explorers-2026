@@ -4,7 +4,17 @@ import sys
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
-conn = psycopg2.connect(dbname='tnbike_db', user='postgres', password='442005', host='localhost', port='5432')
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+conn = psycopg2.connect(
+    dbname=os.getenv('DB_NAME', 'tnbike_db'),
+    user=os.getenv('DB_USER', 'postgres'),
+    password=os.getenv('DB_PASSWORD', ''),
+    host=os.getenv('DB_HOST', 'localhost'),
+    port=os.getenv('DB_PORT', '5432')
+)
 cur = conn.cursor()
 
 query = """

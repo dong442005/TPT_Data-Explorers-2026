@@ -12,12 +12,15 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 INPUT_JSON = PROJECT_ROOT / "data" / "processed" / "processed_data.json"
 OUTPUT_JSON = PROJECT_ROOT / "data" / "processed" / "processed_data_clean.json"
 
+from dotenv import load_dotenv
+load_dotenv()
+
 DB_CONFIG = {
-    "dbname": "tnbike_db",
-    "user": "postgres",
-    "password": "442005",  # Thay mật khẩu máy cá nhân của bạn vào đây nếu cần
-    "host": "localhost",
-    "port": "5432",
+    "dbname": os.getenv("DB_NAME", "tnbike_db"),
+    "user": os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("DB_PASSWORD", ""),
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": os.getenv("DB_PORT", "5432"),
 }
 
 # ---- 1. Đọc file JSON ----

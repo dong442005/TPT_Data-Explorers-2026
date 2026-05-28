@@ -1,0 +1,10 @@
+pandas
+pdfplumber
+psycopg2-binary
+scikit-learn
+xgboost
+catboost
+streamlit
+langchain-community
+langchain-google-genai
+python-dotenv

@@ -4,12 +4,16 @@ import psycopg2
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 DB_CONFIG = {
-    "dbname": "tnbike_db",
-    "user": "postgres",
-    "password": "442005",  # Thay mật khẩu máy cá nhân của bạn vào đây
-    "host": "localhost",
-    "port": "5432",
+    "dbname": os.getenv("DB_NAME", "tnbike_db"),
+    "user": os.getenv("DB_USER", "postgres"),
+    "password": os.getenv("DB_PASSWORD", ""),
+    "host": os.getenv("DB_HOST", "localhost"),
+    "port": os.getenv("DB_PORT", "5432"),
 }
 
 INPUT_JSON = "data/processed/processed_data_clean.json"

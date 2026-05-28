@@ -7,9 +7,19 @@ import pandas as pd  # Thư viện Pandas để đọc các file kết quả mô
 from langchain_community.utilities import SQLDatabase
 from langchain_google_genai import ChatGoogleGenerativeAI
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # ===== CẤU HÌNH HỆ THỐNG VÀ BẢO MẬT =====
-DB_URL = os.getenv("TNBIKE_DB_URL", "postgresql://postgres:442005@localhost:5432/tnbike_db")
-GOOGLE_API_KEY = "[ENCRYPTION_KEY]"
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "tnbike_db")
+DEFAULT_DB_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+
+DB_URL = os.getenv("TNBIKE_DB_URL", DEFAULT_DB_URL)
+GOOGLE_API_KEY = os.getenv("GEMINI_API_KEY", "[ENCRYPTION_KEY]")
 MODELING_DIR = os.getenv("MODELING_DIR", "outputs/modeling")  # Thư mục chứa các file CSV kết quả ML
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

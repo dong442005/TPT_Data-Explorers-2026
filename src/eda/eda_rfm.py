@@ -27,12 +27,16 @@ except ImportError:
 # ============================================================
 # 0. KẾT NỐI DATABASE
 # ============================================================
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 DB_CONFIG = dict(
-    dbname='tnbike_db',
-    user='postgres',
-    password='442005',
-    host='localhost',
-    port='5432'
+    dbname=os.getenv('DB_NAME', 'tnbike_db'),
+    user=os.getenv('DB_USER', 'postgres'),
+    password=os.getenv('DB_PASSWORD', ''),
+    host=os.getenv('DB_HOST', 'localhost'),
+    port=os.getenv('DB_PORT', '5432')
 )
 
 conn = psycopg2.connect(**DB_CONFIG)
