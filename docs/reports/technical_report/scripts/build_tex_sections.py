@@ -127,7 +127,7 @@ The clear separation of concerns inherent in this layered architecture supports 
 
     with open(os.path.join(secs, "03_database_etl.tex"), "w", encoding="utf-8") as f:
         f.write(r"""\section{Database and ETL Pipeline}
-Raw data processing is split into historical seeding and real-time ingestion protocols. Table \ref{tab:pipeline} lists the primary scripts orchestrating these operations and their specific roles within the ecosystem.
+The analytical foundation begins with establishing a robust database and ETL (Extract, Transform, Load) pipeline, detailed in Table \ref{tab:pipeline}. The database and ETL layer represents the foundation of the project: schema creation, historical import, data cleaning patches, email/PDF extraction, normalization, and BI-serving SQL views are upstream dependencies for the forecasting pipeline.
 
 \input{../tables/pipeline_en.tex}
 
@@ -141,24 +141,24 @@ A Data Quality Audit clarified the overarching data landscape, exposing both str
 
 \input{../tables/key_facts_en.tex}
 
-The massive temporal gap spanning from April 2025 to December 2025 posed a substantial modeling challenge. Rather than imputing false zeros and distorting the signal, the pipeline enforces strict block-aware lag restrictions to isolate 2025 data.
+\subsection{Data Limitations and Constraints}
+The most prominent anomaly is a substantial temporal gap spanning exactly 9 months (April 2025 to December 2025). This gap prevents standard YoY comparisons and invalidates classical cyclical forecasting models like SARIMA. Instead of fabricating data through arbitrary interpolation, the project accepts this discontinuity and enforces block-aware lagging strategies to isolate 2025 data.
 
 \subsection{UNKNOWN Hierarchy Impact}
 The audit additionally identified 55 SKUs lacking proper hierarchy assignment; these were tagged as UNKNOWN to reduce downstream hierarchy distortion. The implications of this missing metadata are significant across multiple business streams, as outlined in Table \ref{tab:unknown}.
 
 \input{../tables/unknown_impact_en.tex}
-
 Until the master data is corrected, these products are segregated into a pseudo-group to ensure they do not contaminate the primary group-share allocation metrics.
 \FloatBarrier
 """)
 
     with open(os.path.join(secs, "05_features.tex"), "w", encoding="utf-8") as f:
-        f.write(r"""\section{Feature Engineering and Leakage Prevention}
-To prevent Data Leakage---an algorithmic flaw where models are implicitly fed future information---the system enacted leakage guardrails. These defenses are summarized in Table \ref{tab:guardrails}.
+        f.write(r"""\section{Feature Engineering and Alignment}
+To prevent Data Leakage---an algorithmic flaw where models are implicitly fed future information---the feature store strictly aligns historical training rows with future cutoff constraints. No target variable data from April 2026 onwards leaks into the prediction horizon. Furthermore, any variables reflecting current-period pricing are strictly prohibited to reduce forward-looking bias.
+During feature engineering, \texttt{is\_zero\_sales\_row} is audit-only and excluded from model candidates. Future Q2 rows use cutoff-known features only. Train/future feature alignment is fail-fast to avoid silent feature dropping.
+Table \ref{tab:guardrails} outlines the primary guardrails enforcing this separation.
 
 \input{../tables/guardrails_en.tex}
-
-Zero-sales panelization ensures that SKUs experiencing temporary transaction droughts remain continuously tracked with zero values, preventing popularity-biased distortions. Furthermore, any variables reflecting current-period pricing are strictly prohibited to reduce forward-looking bias during historical training phases.
 \FloatBarrier
 """)
 
@@ -170,12 +170,13 @@ In parallel, Machine Learning tree-based models (LightGBM/CatBoost) are deployed
 \FloatBarrier
 """)
 
-    # Fix #6: "Random Forest" -> "XGBoost" to match actual table contents
     with open(os.path.join(secs, "07_results.tex"), "w", encoding="utf-8") as f:
-        f.write(r"""\section{Modeling Results}
-During the Machine Learning evaluation phase, variants including LightGBM, XGBoost, and CatBoost were cross-validated. Table \ref{tab:model_comp} compares these models across the overall segment using WMAPE (Weighted Mean Absolute Percentage Error).
+        f.write(r"""\subsection{Modeling Validation}
+During the Machine Learning evaluation phase, variants including LightGBM, XGBoost, and CatBoost were evaluated under a constrained temporal holdout / stress-validation setup, with March 2026 treated as the stress validation period. Table \ref{tab:model_comp} compares these models across the overall segment using WMAPE (Weighted Mean Absolute Percentage Error).
 
 \input{../tables/model_comparison_en.tex}
+
+\input{../tables/catboost_forecast_en.tex}
 
 CatBoost\_monthly\_minimal\_features achieved the lowest validation WMAPE among the evaluated ML variants; however, Group-Share remains the primary operational forecast.
 
@@ -202,7 +203,6 @@ The Base scenario anchors standard material procurement planning. The Aggressive
 \FloatBarrier
 """)
 
-    # Fix #9: tone - "highly potent order signal" -> "useful dealer order signal"
     with open(os.path.join(secs, "08_track2.tex"), "w", encoding="utf-8") as f:
         f.write(r"""\section{Track 2: Color Analysis}
 Within the bicycle distribution industry, the base color attribute acts as a useful dealer order signal reflecting localized predictions of end-consumer preferences by dealers. Table \ref{tab:color} and Figure \ref{fig:color} illustrate the Top 10 primary colors dominating the upcoming procurement cycle.
@@ -219,7 +219,7 @@ Top colors listed below serve as strong candidates for procurement assurance, he
 \label{fig:color}
 \end{figure}
 
-Colors falling outside this Top 10 tier, or those exhibiting severe historical demand slumps, are systematically flagged as slow-moving SKUs. This automated flagging empowers the sales department to execute early inventory liquidations, phasing out unviable variants before they negatively impact warehouse capacity.
+Colors falling outside this Top 10 tier, or those exhibiting low or declining historical demand, are systematically flagged as slow-moving SKUs. This automated flagging empowers the sales department to execute early inventory liquidations, phasing out unviable variants before they negatively impact warehouse capacity.
 \FloatBarrier
 """)
 
@@ -259,23 +259,16 @@ For BI visualization, the system architecture connects Power BI directly into th
 """)
 
     with open(os.path.join(secs, "11_reproducibility.tex"), "w", encoding="utf-8") as f:
-        f.write(r"""\section{Reproducibility}
-Pipeline reproducibility ensures that historical validations can be re-run consistently. The Python environment is locked via the project's \texttt{requirements.txt}. All Machine Learning variants employ strict \texttt{random\_state} seed settings to eliminate stochastic divergence during re-training. Additionally, strict \texttt{.gitignore} policies ensure local metadata artifacts are not committed to the shared repository.
+        f.write(r"""\section{Pipeline Reproducibility}
+Pipeline reproducibility ensures that historical validations can be re-run consistently. The Python architecture operates purely via CLI arguments to enforce immutable rules. Raw CSVs, interim data, feature stores, cache files, and model binaries are intentionally excluded from version control; the pipeline runner regenerates derived artifacts locally.
 
-Below are the standard operational execution commands, presented in strict ASCII syntax:
-
-\begin{itemize}
-    \item To execute a syntax check and pipeline simulation without saving outputs:
-\begin{lstlisting}
+\begin{lstlisting}[language=bash]
+# 1. Dry-run to validate pipeline structure without overwriting
 python src/models/forecasting/run_end_to_end.py --dry-run
-\end{lstlisting}
 
-    \item To execute the full pipeline end-to-end, permitting ML model overwrites:
-\begin{lstlisting}
-python src/models/forecasting/run_end_to_end.py \
-    --allow-modeling --allow-overwrite
+# 2. End-to-End execution
+python src/models/forecasting/run_end_to_end.py --allow-modeling --allow-overwrite
 \end{lstlisting}
-\end{itemize}
 \FloatBarrier
 """)
 
@@ -283,6 +276,7 @@ python src/models/forecasting/run_end_to_end.py \
         f.write(r"""\section{Limitations and Future Work}
 While providing a stable operational baseline, the system carries fundamental technical limitations that dictate clear avenues for future enhancement:
 \begin{itemize}
+    \item \textbf{UNKNOWN Product Hierarchy}: 55 SKUs remain unmapped to known product groups or lines. Future work should prioritize master data correction to improve group-level allocation, BI drilldown, and model category signals.
     \item \textbf{Short History}: The absence of 9 core months of data in 2025 severely restricts cyclical analysis, requiring additional real historical data or carefully documented scenario assumptions in future iterations.
     \item \textbf{March Shock}: The sudden demand surge may incite overfitting phenomena in short-term forecasting if tree weights are not heavily regularized.
     \item \textbf{Cold-start Problem}: Newly onboarded dealers lack sufficient transactional history, inhibiting the generation of meaningful RFM behavioral scores.

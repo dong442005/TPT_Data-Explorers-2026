@@ -1,0 +1,19 @@
+\begin{table}[H]
+\centering
+\small
+\caption{Best ML Forecast vs Group-Share Base}
+\label{tab:cb_vs_base}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llll}
+\toprule
+\textbf{Method} & \textbf{Q2 Forecast Quantity} & \textbf{Q2 Forecast Revenue (VND)} & \textbf{Interpretation} \\
+\midrule
+Group-Share Base & 37,596 & 60,914,780,907 & Primary operational baseline (Base scenario) \\
+CatBoost\_monthly\_minimal\_features & 51,640 & 85,652,196,872 & Best ML validation variant (reference only) \\
+\bottomrule
+\end{tabular}
+}
+\begin{flushleft}
+\footnotesize \textit{Note.} Group-Share Base is taken from the Base scenario only, not the sum of Conservative, Base, and Aggressive scenarios. CatBoost is shown as a reference ML forecast and is not the official planning baseline.
+\end{flushleft}
+\end{table}

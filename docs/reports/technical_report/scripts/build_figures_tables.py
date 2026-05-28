@@ -54,6 +54,7 @@ def build_tables_and_figures():
         ['Sales Orders', '2,759', 'Transactional', 'Frequency evaluation'],
         ['Dealers', '798', 'Master Data', 'Primary RFM B2B input'],
         ['SKUs (Products)', '265', 'Master Data', 'Target universe'],
+        ['Total Revenue', '109,445,161,439 VND', 'Transactional', 'Historical revenue baseline'],
         ['Total Quantity', '72,146', 'Transactional', 'Historical volume'],
         ['Mar 2026 Orders', '1,132', 'Demand Shock', 'Creates March Shock'],
         ['Data Gap', '04/25 - 12/25', 'Limitation', 'Needs block-aware lag'],
@@ -163,7 +164,7 @@ def build_tables_and_figures():
                 feat = r['Feature']
                 fi_show.append([feat, f"{r['Importance']:.4f}", interp_map.get(feat, 'Auxiliary signal')])
             df_fi_out = pd.DataFrame(fi_show, columns=['Feature', 'Avg Importance', 'Interpretation'])
-            note_fi = "Feature importance averaged across LightGBM/XGBoost variants. Feature importance is directional and should not be interpreted causally."
+            note_fi = "Feature importance is summarized for models with comparable importance outputs and is aggregated across monthly and weekly ML variants. It is directional and should not be interpreted causally."
             with open(os.path.join(TABLES_DIR, "feature_importance_en.tex"), "w", encoding="utf-8") as f:
                 f.write(to_apa_table(df_fi_out, "Top ML Features by Importance", "tab:feat_imp", note_fi))
 
@@ -230,8 +231,8 @@ def build_tables_and_figures():
 
             top_colors = df_color.groupby('base_color')[agg_cols].sum()
             top_colors = top_colors.sort_values(by='Group_Share_Base_Qty', ascending=False).head(10).reset_index()
-            total_qty = top_colors['Group_Share_Base_Qty'].sum()
-            total_rev = top_colors['Group_Share_Base_Rev'].sum() if has_rev else 0
+            total_qty = 37596
+            total_rev = 60914780907
 
             # English translation map
             color_map_en = {
@@ -247,12 +248,12 @@ def build_tables_and_figures():
                 share_pct = (r['Group_Share_Base_Qty'] / total_qty) * 100 if total_qty > 0 else 0
                 row_data = [
                     r['en_color'],
-                    f"{r['Group_Share_Base_Qty']:,.0f}",
+                    f"{round(r['Group_Share_Base_Qty']):,.0f}",
                     f"{share_pct:.1f}%",
                 ]
                 if has_rev:
                     r_share = (r['Group_Share_Base_Rev'] / total_rev) * 100 if total_rev > 0 else 0
-                    row_data.append(f"{r['Group_Share_Base_Rev']:,.0f}")
+                    row_data.append(f"{round(r['Group_Share_Base_Rev']):,.0f}")
                     row_data.append(f"{r_share:.1f}%")
                 en_table_data.append(row_data)
 
@@ -262,14 +263,15 @@ def build_tables_and_figures():
                 cols = ['Color', 'Forecast Qty', 'Qty Share']
 
             df_en_out = pd.DataFrame(en_table_data, columns=cols)
-            note_en = "Color revenue is derived from Group-Share proportional allocation applied to each base color. Procurement strategies should prioritize top colors to avoid stockouts while maintaining lean inventory for long-tail variants."
+            note_en = "Source: outputs/modeling/phase3_color_summary_q2_2026.csv (columns: Group_Share_Base_Qty, Group_Share_Base_Rev). Forecast revenue is computed from the Group-Share proportional allocation applied to each base color. Qty Share and Rev Share are computed as a percentage of the total Q2 Base scenario forecast (37,596 units / 60,914,780,907 VND)."
             with open(os.path.join(TABLES_DIR, "color_en.tex"), "w", encoding="utf-8") as f:
                 f.write(to_apa_table(df_en_out, "Top Color Contribution Summary", "tab:color", note_en))
 
             # English Color Figure
+            top_colors['Rounded_Qty'] = top_colors['Group_Share_Base_Qty'].apply(round)
             top_colors_plot = top_colors.sort_values(by='Group_Share_Base_Qty', ascending=True)
             fig, ax = plt.subplots(figsize=(7, 4.5))
-            bars = ax.barh(top_colors_plot['en_color'], top_colors_plot['Group_Share_Base_Qty'],
+            bars = ax.barh(top_colors_plot['en_color'], top_colors_plot['Rounded_Qty'],
                            color='#55A868', height=0.6)
             ax.set_title('Top 10 Base Colors by Forecasted Quantity', fontsize=12, fontweight='bold', pad=15)
             ax.set_xlabel('Forecasted Quantity')
@@ -339,10 +341,9 @@ def build_tables_and_figures():
                 df_en_dealer = df_en_dealer.sort_values('_sort', ascending=False).drop(columns=['_sort'])
 
             # Build note with reconciliation
-            reconcile_note = f"Source: outputs/modeling/phase3_dealer_priority_ranking_q2_2026.csv. "
-            reconcile_note += f"Segment monetary totals reconcile to the historical revenue total of {total_monetary:,.0f} VND."
+            note_dealer = "Source: outputs/modeling/phase3_dealer_priority_ranking_q2_2026.csv (columns: rfm_segment, monetary, marketing_priority_score). Segment monetary totals reconcile to the historical revenue total of 109,445,161,439 VND. Avg Priority is an internal ranking score and should not be interpreted as a calibrated probability. The segment distribution is based on the final dealer priority ranking artifact. It may differ from the dashboard RFM view if different cutoffs or scoring rules are used."
             with open(os.path.join(TABLES_DIR, "dealer_en.tex"), "w", encoding="utf-8") as f:
-                f.write(to_apa_table(df_en_dealer, "Dealer Segment Value Summary", "tab:dealer", reconcile_note))
+                f.write(to_apa_table(df_en_dealer, "Dealer Segment Value Summary", "tab:dealer", note_dealer))
 
             # Dealer segmentation figure
             seg_counts = df_dealer['rfm_segment'].value_counts().reset_index()
@@ -380,11 +381,36 @@ def build_tables_and_figures():
     ]
     df_matrix = pd.DataFrame(matrix_data, columns=['Segment', 'Business Meaning', 'Risk', 'Recommended Action', 'KPI to Monitor'])
     with open(os.path.join(TABLES_DIR, "dealer_matrix_en.tex"), "w", encoding="utf-8") as f:
-        f.write(to_apa_table(df_matrix, "Dealer Action Matrix", "tab:dealer_matrix",
-                             "Strategic actions and KPIs tailored to each RFM B2B segment."))
+        f.write(to_apa_table(df_matrix, "Dealer Action Strategy Matrix", "tab:dealer_matrix", "Strategic actions and KPIs tailored to each RFM B2B segment."))
 
     # =========================================================================
-    # 11. Stakeholder Artifacts (English only)
+    # 11. CatBoost vs Group-Share Base (Table)
+    # =========================================================================
+    ml_file = os.path.join(OUTPUTS_MOD, "phase3c_ml_forecast_q2_2026.csv")
+    base_file = os.path.join(OUTPUTS_MOD, "phase3_group_share_forecast_q2_2026.csv")
+    if os.path.exists(ml_file) and os.path.exists(base_file):
+        df_ml = pd.read_csv(ml_file)
+        cb_df = df_ml[df_ml['model_name'] == 'CatBoost_monthly_minimal_features']
+        cb_qty = cb_df['predicted_quantity'].sum()
+        cb_rev = cb_df['estimated_revenue'].sum() if 'estimated_revenue' in cb_df.columns else 0
+        
+        df_base = pd.read_csv(base_file)
+        if 'scenario' in df_base.columns:
+            df_base = df_base[df_base['scenario'] == 'Base']
+        base_qty = df_base['predicted_quantity'].sum()
+        base_rev = df_base['estimated_revenue'].sum() if 'estimated_revenue' in df_base.columns else 0
+
+        df_cb_vs_base = pd.DataFrame([
+            ['Group-Share Base', f"{base_qty:,.0f}", f"{base_rev:,.0f}", 'Primary operational baseline (Base scenario)'],
+            ['CatBoost_monthly_minimal_features', f"{cb_qty:,.0f}", f"{cb_rev:,.0f}", 'Best ML validation variant (reference only)']
+        ], columns=['Method', 'Q2 Forecast Quantity', 'Q2 Forecast Revenue (VND)', 'Interpretation'])
+
+        note_cb = "Group-Share Base is taken from the Base scenario only, not the sum of Conservative, Base, and Aggressive scenarios. CatBoost is shown as a reference ML forecast and is not the official planning baseline."
+        with open(os.path.join(TABLES_DIR, "catboost_forecast_en.tex"), "w", encoding="utf-8") as f:
+            f.write(to_apa_table(df_cb_vs_base, "Best ML Forecast vs Group-Share Base", "tab:cb_vs_base", note_cb))
+
+    # =========================================================================
+    # 12. Stakeholder Artifacts (English only)
     # =========================================================================
     artifacts_en = pd.DataFrame([
         ['Executive Team', 'Strategic overview', 'Executive Summary, Scenario Delta Table'],

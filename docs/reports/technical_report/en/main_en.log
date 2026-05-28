@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.12) (preloaded format=xelatex 2026.3.22)  28 MAY 2026 21:17
+This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.12) (preloaded format=xelatex 2026.3.22)  28 MAY 2026 21:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -623,19 +623,14 @@ Overfull \hbox (1.42058pt too wide) in paragraph at lines 2--3
 
 (../tables/key_facts_en.tex) [4] (../tables/unknown_impact_en.tex))
 (sections/05_features.tex
-Overfull \hbox (20.68054pt too wide) in paragraph at lines 2--3
+Overfull \hbox (20.68054pt too wide) in paragraph at lines 2--5
 \TU/TimesNewRoman(0)/m/n/12 To prevent Data Leakage—an algorithmic flaw where m
 odels are implicitly fed future information—
  []
 
-(../tables/guardrails_en.tex) [5]
-Overfull \hbox (5.36298pt too wide) in paragraph at lines 6--7
-\TU/TimesNewRoman(0)/m/n/12 thermore, any variables reflecting current-period p
-ricing are strictly prohibited to reduce forward-
- []
-
-) (sections/06_strategy.tex) (sections/07_results.tex
-(../tables/model_comparison_en.tex) [6] (../tables/feature_importance_en.tex)
+[5] (../tables/guardrails_en.tex)) (sections/06_strategy.tex)
+(sections/07_results.tex (../tables/model_comparison_en.tex) [6]
+(../tables/catboost_forecast_en.tex) (../tables/feature_importance_en.tex)
 [7] (../tables/scenario_en.tex)
 File: ../figures/en/scenario_forecast.pdf Graphic file (type pdf)
 <use ../figures/en/scenario_forecast.pdf>
@@ -646,28 +641,36 @@ File: ../figures/en/color_summary.pdf Graphic file (type pdf)
  [9]) (sections/09_track3.tex (../tables/dealer_en.tex) [10]
 File: ../figures/en/dealer_segmentation.pdf Graphic file (type pdf)
 <use ../figures/en/dealer_segmentation.pdf>
- (../tables/dealer_matrix_en.tex) [11]) (sections/10_deliverables.tex
+ [11] (../tables/dealer_matrix_en.tex)) (sections/10_deliverables.tex
 (../tables/artifacts_en.tex)) (sections/11_reproducibility.tex
 Overfull \hbox (2.14214pt too wide) in paragraph at lines 2--3
 \TU/TimesNewRoman(0)/m/n/12 Pipeline reproducibility ensures that historical va
 lidations can be re-run consistently. The Python
  []
 
-[12]) (sections/12_limitations.tex) [13] (main_en.aux)
+[12]
+(C:\Users\HOANG TUNG\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.
+sty
+File: lstlang1.sty 2025/11/14 1.11b listings language file
+)
+(C:\Users\HOANG TUNG\AppData\Local\Programs\MiKTeX\tex/latex/listings\lstlang1.
+sty
+File: lstlang1.sty 2025/11/14 1.11b listings language file
+)) (sections/12_limitations.tex) [13] (main_en.aux)
  ***********
 LaTeX2e <2025-11-01>
 L3 programming layer <2025-12-24>
  ***********
 Package rerunfilecheck Info: File `main_en.out' has not changed.
-(rerunfilecheck)             Checksum: 1736DC94C51D42090290FD0B53BCF05F;3258.
+(rerunfilecheck)             Checksum: 8BC50D6FC4050E013330CA035EAD2B42;3513.
  ) 
 Here is how much of TeX's memory you used:
- 14829 strings out of 402987
- 284814 string characters out of 5447489
- 763086 words of memory out of 5000000
- 43315 multiletter control sequences out of 15000+600000
- 631949 words of font info for 80 fonts, out of 8000000 for 9000
+ 14962 strings out of 402987
+ 286560 string characters out of 5447489
+ 942212 words of memory out of 5000000
+ 43438 multiletter control sequences out of 15000+600000
+ 631957 words of font info for 81 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 73i,9n,93p,1006b,980s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 73i,9n,93p,1006b,1091s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on main_en.pdf (14 pages).

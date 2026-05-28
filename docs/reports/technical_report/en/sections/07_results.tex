@@ -1,7 +1,9 @@
-\section{Modeling Results}
-During the Machine Learning evaluation phase, variants including LightGBM, XGBoost, and CatBoost were cross-validated. Table \ref{tab:model_comp} compares these models across the overall segment using WMAPE (Weighted Mean Absolute Percentage Error).
+\subsection{Modeling Validation}
+During the Machine Learning evaluation phase, variants including LightGBM, XGBoost, and CatBoost were evaluated under a constrained temporal holdout / stress-validation setup, with March 2026 treated as the stress validation period. Table \ref{tab:model_comp} compares these models across the overall segment using WMAPE (Weighted Mean Absolute Percentage Error).
 
 \input{../tables/model_comparison_en.tex}
+
+\input{../tables/catboost_forecast_en.tex}
 
 CatBoost\_monthly\_minimal\_features achieved the lowest validation WMAPE among the evaluated ML variants; however, Group-Share remains the primary operational forecast.
 

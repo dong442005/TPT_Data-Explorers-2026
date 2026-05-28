@@ -1,7 +1,7 @@
-\section{Feature Engineering and Leakage Prevention}
-To prevent Data Leakage---an algorithmic flaw where models are implicitly fed future information---the system enacted leakage guardrails. These defenses are summarized in Table \ref{tab:guardrails}.
+\section{Feature Engineering and Alignment}
+To prevent Data Leakage---an algorithmic flaw where models are implicitly fed future information---the feature store strictly aligns historical training rows with future cutoff constraints. No target variable data from April 2026 onwards leaks into the prediction horizon. Furthermore, any variables reflecting current-period pricing are strictly prohibited to reduce forward-looking bias.
+During feature engineering, \texttt{is\_zero\_sales\_row} is audit-only and excluded from model candidates. Future Q2 rows use cutoff-known features only. Train/future feature alignment is fail-fast to avoid silent feature dropping.
+Table \ref{tab:guardrails} outlines the primary guardrails enforcing this separation.
 
 \input{../tables/guardrails_en.tex}
-
-Zero-sales panelization ensures that SKUs experiencing temporary transaction droughts remain continuously tracked with zero values, preventing popularity-biased distortions. Furthermore, any variables reflecting current-period pricing are strictly prohibited to reduce forward-looking bias during historical training phases.
 \FloatBarrier
