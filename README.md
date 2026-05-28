@@ -91,7 +91,7 @@ TPT_Data-Explorers-2026/
 │
 ├── bi/                                 # File Power BI (`.pbix`) & file lưu trữ DAX
 │   └── dax/
-│       └── TPT_Dashboard_28_5 (4).pbix # File Power BI Dashboard chính thức
+│       └── TPT_Dashboard_28_5_final.pbix # File Power BI Dashboard chính thức
 ├── notebooks/                          # [Không commit] Phân tích thử nghiệm (EDA)
 ├── models/                             # [Không commit] File lưu trữ trọng số mô hình (.pkl)
 └── data/                               # [Không commit] Dữ liệu thô (`raw/`) và sạch (`processed/`)
@@ -183,7 +183,7 @@ Hệ thống Dashboard được xây dựng trên Power BI, trực tiếp truy v
 5. **Geographic (Phân tích Địa lý):** Bản đồ nhiệt phân bổ doanh thu theo tỉnh thành, làm nổi bật rủi ro tập trung doanh thu (Concentration Risk).
 6. **Pipeline Operations (Vận hành Dữ liệu):** Theo dõi phễu xử lý dữ liệu ETL từ Email đến Database với tỷ lệ thành công 100%.
 
-> 📊 **File Dashboard chính thức:** [`bi/dax/TPT_Dashboard_28_5 (4).pbix`](bi/dax/TPT_Dashboard_28_5%20(4).pbix)
+> 📊 **File Dashboard chính thức:** [`bi/dax/TPT_Dashboard_28_5_final.pbix`](bi/dax/TPT_Dashboard_28_5_final.pbix)
 > 💡 **Hướng dẫn đọc Dashboard & DAX:** Xem tại [`docs/dashboard_powerbi_guide.md`](docs/dashboard_powerbi_guide.md).
 
 ---
@@ -241,7 +241,7 @@ python src/eda/eda_general.py      # 5. EDA Báo cáo Kinh doanh (Sau khi nạp 
 
 ### Bước 5: Tạo Views cho Power BI & Kết nối BI
 - Chạy file `database/views/powerbi_views.sql` trong DBeaver/pgAdmin.
-- Mở file Dashboard chính thức tại `bi/dax/TPT_Dashboard_28_5 (4).pbix`, thiết lập Host: `localhost`, Database: `tnbike_db`, và bấm **Refresh**.
+- Mở file Dashboard chính thức tại `bi/dax/TPT_Dashboard_28_5_final.pbix`, thiết lập Host: `localhost`, Database: `tnbike_db`, và bấm **Refresh**.
 
 ### Bước 6: Chạy Pipeline Machine Learning (End-to-End)
 ```bash
@@ -280,6 +280,7 @@ streamlit run app.py
 ## 10. Tài Liệu Tham Khảo & Đầu Ra Báo Cáo
 
 Tất cả các kết quả và chứng minh khoa học được tự động kết xuất minh bạch:
+- 📝 **Báo Cáo Tổng Hợp Dự Án:** [`TNBike_Data_Explorers_Report.md`](TNBike_Data_Explorers_Report.md) (File chuẩn bị nội dung)
 - 📄 **Báo Cáo Kỹ Thuật Chính Thức:** [`docs/reports/technical_report_en.pdf`](docs/reports/technical_report/technical_report_en.pdf) (Thuyết minh phương pháp luận thiết kế, rò rỉ dữ liệu, kết quả).
 - 📊 **Kết Quả Dự Báo (Outputs):** `outputs/modeling/` (Chứa CSV điểm RFM, phân bổ màu sắc, dự báo SKU).
 - 📈 **Báo Cáo Kiểm Định Dữ Liệu (Audit):** `outputs/audit/`
