@@ -40,11 +40,11 @@ Which script produces the FINAL version of each parquet file (last writer wins):
 
 | Order | Script | Line | Severity | Finding | Detail |
 |-------|--------|------|----------|---------|--------|
-| 3 | `build_phase2a_patch.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\Data_Explorers_Vong_2\implement\phase2_feature_s` |
-| 4 | `build_phase2a_patch2.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\Data_Explorers_Vong_2\implement\phase2_feature_s` |
-| 6 | `align_track1_features_patch4.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\Data_Explorers_Vong_2\implement\phase2_feature_s` |
-| 7 | `patch_5_features.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\Data_Explorers_Vong_2\implement\phase2_feature_s` |
-| 8 | `patch_6_features.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\Data_Explorers_Vong_2\implement\phase2_feature_s` |
+| 3 | `build_phase2a_patch.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\TPT_Data-Explorers-2026\src\models\forecasting\p` |
+| 4 | `build_phase2a_patch2.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\TPT_Data-Explorers-2026\src\models\forecasting\p` |
+| 6 | `align_track1_features_patch4.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\TPT_Data-Explorers-2026\src\models\forecasting\p` |
+| 7 | `patch_5_features.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\TPT_Data-Explorers-2026\src\models\forecasting\p` |
+| 8 | `patch_6_features.py` | N/A | **ERROR** | FILE NOT FOUND | `Expected at C:\Users\HOANG TUNG\TPT_Data-Explorers-2026\src\models\forecasting\p` |
 
 
 ## Critical Analysis: Overwrite Chain

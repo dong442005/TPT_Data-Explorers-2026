@@ -8,7 +8,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
-from src.models.forecasting.shared.config.paths import FEATURES_DIR, IMPLEMENT_DIR, CONFIG_DIR, RAW_DATA_DIR
+from src.models.forecasting.shared.config.paths import FEATURES_DIR, IMPLEMENT_DIR, CONFIG_DIR, RAW_DATA_DIR, METADATA_DIR
 
 from src.models.forecasting.shared.config.paths import MODELING_OUTPUTS_DIR
 OUTPUT_DIR = MODELING_OUTPUTS_DIR
@@ -67,7 +67,7 @@ def run_phase3c():
     m_future = pd.read_parquet(os.path.join(FEATURES_DIR, "track1_monthly_future_aligned.parquet"))
     w_train = pd.read_parquet(os.path.join(FEATURES_DIR, "track1_weekly_train_aligned.parquet"))
     w_future = pd.read_parquet(os.path.join(FEATURES_DIR, "track1_weekly_future_aligned.parquet"))
-    meta = pd.read_parquet(os.path.join(CONFIG_DIR, "product_metadata.parquet"))
+    meta = pd.read_parquet(os.path.join(METADATA_DIR, "product_metadata.parquet"))
     
     with open(os.path.join(CONFIG_DIR, "track1_model_feature_sets.json"), "r") as f:
         feature_sets = json.load(f)

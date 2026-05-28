@@ -13,5 +13,6 @@ Scripts are designed to be run from the repository root.
 ### How to Run
 Always execute scripts from the root directory:
 ```bash
-python implement/phase1_data_foundation/phase1a_verification/scripts/verify_phase1a.py
+python src/models/forecasting/run_end_to_end.py --dry-run
+python src/models/forecasting/run_end_to_end.py --allow-modeling --allow-overwrite
 ```

@@ -13,7 +13,7 @@ from src.models.forecasting.shared.config.paths import RAW_DATA_DIR, INTERIM_DAT
 RAW_DIR = RAW_DATA_DIR
 INTERIM_DIR = INTERIM_DATA_DIR
 METADATA_DIR = METADATA_DIR
-AUDIT_DIR = "implement/phase1_data_foundation/phase1c_raw_csv_reconciliation/outputs"
+AUDIT_DIR = "outputs/audit"
 
 def ensure_dir(d):
     if not os.path.exists(d):

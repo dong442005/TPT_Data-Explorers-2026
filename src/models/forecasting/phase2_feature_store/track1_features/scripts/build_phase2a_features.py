@@ -6,12 +6,13 @@ import calendar
 
 import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')))
-from src.models.forecasting.shared.config.paths import INTERIM_DATA_DIR, CONFIG_DIR, FEATURES_DIR
+from src.models.forecasting.shared.config.paths import INTERIM_DATA_DIR, CONFIG_DIR, FEATURES_DIR, METADATA_DIR
 
 INTERIM_DIR = INTERIM_DATA_DIR
 CONFIG_DIR = CONFIG_DIR
 FEATURES_DIR = FEATURES_DIR
-AUDIT_DIR = "implement/phase2_feature_store/track1_features/outputs"
+METADATA_DIR = METADATA_DIR
+AUDIT_DIR = "outputs/audit"
 
 os.makedirs(FEATURES_DIR, exist_ok=True)
 os.makedirs(AUDIT_DIR, exist_ok=True)
@@ -58,7 +59,7 @@ def safe_rolling_mean(df, group_col, val_col, window_n, block_col):
 def build_monthly_features():
     print("Building monthly features...")
     m = pd.read_parquet(os.path.join(INTERIM_DIR, "fact_sales_monthly.parquet"))
-    meta = pd.read_parquet(os.path.join(CONFIG_DIR, "product_metadata.parquet"))
+    meta = pd.read_parquet(os.path.join(METADATA_DIR, "product_metadata.parquet"))
     
     # 1. Merge metadata (color, is_cold_start_march_sku)
     m = m.merge(meta[['product_code', 'color', 'is_cold_start_march_sku']], on='product_code', how='left')
@@ -144,7 +145,7 @@ def build_monthly_features():
 def build_weekly_features():
     print("Building weekly features...")
     w = pd.read_parquet(os.path.join(INTERIM_DIR, "fact_sales_weekly.parquet"))
-    meta = pd.read_parquet(os.path.join(CONFIG_DIR, "product_metadata.parquet"))
+    meta = pd.read_parquet(os.path.join(METADATA_DIR, "product_metadata.parquet"))
     
     w = w.merge(meta[['product_code', 'color', 'is_cold_start_march_sku']], on='product_code', how='left')
     w['is_unknown_hierarchy'] = (w['group_code_clean'] == 'UNKNOWN').astype(int)
@@ -463,8 +464,8 @@ def run_leakage_audit():
 if __name__ == "__main__":
     hm = build_monthly_features()
     hw = build_weekly_features()
-    build_future_monthly_rows(hm, pd.read_parquet(os.path.join(CONFIG_DIR, "product_metadata.parquet")))
-    build_future_weekly_rows(hw, pd.read_parquet(os.path.join(CONFIG_DIR, "product_metadata.parquet")))
+    build_future_monthly_rows(hm, pd.read_parquet(os.path.join(METADATA_DIR, "product_metadata.parquet")))
+    build_future_weekly_rows(hw, pd.read_parquet(os.path.join(METADATA_DIR, "product_metadata.parquet")))
     build_feature_registry()
     run_leakage_audit()
     print("Phase 2A completely finished!")

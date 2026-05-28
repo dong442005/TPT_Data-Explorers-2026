@@ -38,7 +38,8 @@ ROOT_DIR = Path(__file__).resolve().parents[3]
 
 RAW_DATA_DIR = ROOT_DIR / "data" / "raw"
 FEATURES_DIR = ROOT_DIR / "data" / "features"
-CONFIG_DIR = ROOT_DIR / "data" / "metadata"
+CONFIG_DIR = ROOT_DIR / "src" / "models" / "forecasting" / "config"
+METADATA_DIR = ROOT_DIR / "data" / "metadata"
 OUTPUTS_DIR = ROOT_DIR / "outputs"
 AUDIT_DIR = OUTPUTS_DIR / "audit"
 MODELING_DIR = OUTPUTS_DIR / "modeling"
@@ -91,8 +92,8 @@ PIPELINE_STEPS = [
         name="Build clean product metadata",
         script=ROOT_DIR / "src/models/forecasting/phase1_data_foundation/phase1c_raw_csv_reconciliation/scripts/phase1c_build_metadata.py",
         required_outputs=(
-            CONFIG_DIR / "product_metadata.parquet",
-            CONFIG_DIR / "product_hierarchy_mapping.csv",
+            METADATA_DIR / "product_metadata.parquet",
+            METADATA_DIR / "product_hierarchy_mapping.csv",
         ),
     ),
     PipelineStep(
@@ -310,6 +311,7 @@ def main() -> int:
     manifest_path = RUN_LOG_DIR / f"end_to_end_run_manifest_{run_id}.json"
 
     env = os.environ.copy()
+    env["PYTHONPATH"] = str(ROOT_DIR) + (os.pathsep + env["PYTHONPATH"] if "PYTHONPATH" in env else "")
     env["PYTHONHASHSEED"] = "42"
     env["PYTHONIOENCODING"] = "utf-8"
     env["DATA_EXPLORERS_RUN_ID"] = run_id

@@ -279,13 +279,13 @@ Repository sử dụng 1 file điều phối duy nhất. Đứng tại thư mụ
 
 ```bash
 # 1. Chạy thử nghiệm (Dry-run) - Kiểm tra cấu trúc pipeline và file input mà không chạy script
-python implement/run_end_to_end.py --dry-run
+python src/models/forecasting/run_end_to_end.py --dry-run
 
 # 2. Chạy toàn bộ Pipeline (End-to-End) - Đòi hỏi quyền overwrite output
-python implement/run_end_to_end.py --allow-modeling --allow-overwrite
+python src/models/forecasting/run_end_to_end.py --allow-modeling --allow-overwrite
 ```
 
-**Lưu ý:** Flag `--allow-overwrite` là cơ chế an toàn để ngăn việc vô tình ghi đè (overwrite) các kết quả dự báo đang tốt trong thư mục `outputs/modeling/`.
+**Lưu ý:** Cờ `--allow-modeling` cho phép chạy quá trình huấn luyện, và cờ `--allow-overwrite` là cơ chế an toàn để ngăn vô tình ghi đè kết quả dự báo đang có tại `outputs/modeling/`.
 
 ---
 
@@ -309,17 +309,10 @@ Toàn bộ báo cáo và kết quả được lưu minh bạch tại thư mục 
 Cấu trúc thư mục được dọn dẹp gọn gàng, chia tách rõ ràng trách nhiệm của từng component:
 
 ```text
-Data_Explorers_Vong_2/
+TPT_Data-Explorers-2026/
 ├── archive/                     # Nơi lưu trữ các scripts và artifacts cũ, nháp
-│   ├── debug_notes/
-│   ├── debug_scripts/
-│   └── legacy_scripts/
 ├── data/                        # Quản lý vòng đời dữ liệu
-│   ├── features/                # File ma trận đặc trưng (.parquet) cho ML
-│   ├── interim/                 # Dữ liệu sạch trung gian
-│   ├── metadata/                # Bảng tham chiếu (Product Map, Feature Registry)
-│   └── raw/                     # [BẤT BIẾN] Chứa các CSV gốc từ Data Explorers
-├── implement/                   # Mã nguồn thực thi Pipeline
+├── src/models/forecasting/      # Mã nguồn thực thi Pipeline Dự Báo
 │   ├── phase1_data_foundation/  # Scripts gom nhóm, làm sạch
 │   ├── phase2_feature_store/    # Scripts tạo Lag, RFM, Alignment
 │   ├── phase3_modeling/         # Scripts dự báo Track 1, 2, 3
@@ -328,10 +321,7 @@ Data_Explorers_Vong_2/
 ├── outputs/                     # Thành phẩm cuối cùng
 │   ├── audit/                   # Báo cáo kiểm định chất lượng dữ liệu
 │   └── modeling/                # Kết quả dự báo (CSVs) và báo cáo kinh doanh (MDs)
-├── .gitignore                   # Thiết lập chặn các file pycache, env, catboost_info
-├── requirements.txt             # Danh sách thư viện Python (Dependencies)
-├── IMPLEMENTATION_BLUEPRINT.md  # Kế hoạch thiết kế hệ thống gốc
-├── REPO_ARCHITECTURE.md         # Giải thích chi tiết Data Lineage và Cấu trúc
+├── docs/                        # Thuyết minh và tài liệu Markdown
 └── README.md                    # (Bạn đang đọc file này)
 ```
 

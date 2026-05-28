@@ -5,7 +5,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', '..')))
 from src.models.forecasting.shared.config.paths import INTERIM_DATA_DIR, CONFIG_DIR, FEATURES_DIR, IMPLEMENT_DIR
-AUDIT_DIR = "implement/phase2_feature_store/track1_features/outputs"
+AUDIT_DIR = "outputs/audit"
 
 def align_features():
     print("Loading data...")
