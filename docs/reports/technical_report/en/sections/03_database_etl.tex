@@ -1,0 +1,7 @@
+\section{Database and ETL Pipeline}
+The analytical foundation begins with establishing a robust database and ETL (Extract, Transform, Load) pipeline, detailed in Table \ref{tab:pipeline}. The database and ETL layer represents the foundation of the project: schema creation, historical import, data cleaning patches, email/PDF extraction, normalization, and BI-serving SQL views are upstream dependencies for the forecasting pipeline.
+
+\input{../tables/pipeline_en.tex}
+
+Manual Data Quality Patches (SQL) addressed known color and geographic inconsistencies. For example, harmonizing misspelled color variants prevented the artificial splintering of a single product's demand signal into multiple disjointed time-series.
+\FloatBarrier

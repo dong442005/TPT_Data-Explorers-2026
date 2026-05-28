@@ -636,4 +636,4 @@ FROM rfm_scored;
 
 ---
 
-*Phân tích dựa trên EDA thực tế ngày 24/05/2026 | File EDA: [eda_rfm.py](file:///d:/NPD/V2_DataExplore/Data_Explorers_Vong_2/eda_rfm.py) | Biểu đồ: [eda_output/](file:///d:/NPD/V2_DataExplore/Data_Explorers_Vong_2/eda_output)*
+*Phân tích dựa trên EDA thực tế ngày 24/05/2026 | File EDA: [eda_rfm.py](file:///C:/Users/HOANG%20TUNG/TPT_Data-Explorers-2026/archive/legacy_scripts/eda_rfm.py)*

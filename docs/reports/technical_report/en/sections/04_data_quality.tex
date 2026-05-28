@@ -1,0 +1,14 @@
+\section{Data Quality Audit}
+A Data Quality Audit clarified the overarching data landscape, exposing both structural strengths and historical flaws. Table \ref{tab:key_facts} itemizes critical metrics shaping the system's design constraints.
+
+\input{../tables/key_facts_en.tex}
+
+\subsection{Data Limitations and Constraints}
+The most prominent anomaly is a substantial temporal gap spanning exactly 9 months (April 2025 to December 2025). This gap prevents standard YoY comparisons and invalidates classical cyclical forecasting models like SARIMA. Instead of fabricating data through arbitrary interpolation, the project accepts this discontinuity and enforces block-aware lagging strategies to isolate 2025 data.
+
+\subsection{UNKNOWN Hierarchy Impact}
+The audit additionally identified 55 SKUs lacking proper hierarchy assignment; these were tagged as UNKNOWN to reduce downstream hierarchy distortion. The implications of this missing metadata are significant across multiple business streams, as outlined in Table \ref{tab:unknown}.
+
+\input{../tables/unknown_impact_en.tex}
+Until the master data is corrected, these products are segregated into a pseudo-group to ensure they do not contaminate the primary group-share allocation metrics.
+\FloatBarrier

@@ -1,0 +1,5 @@
+\section{Forecasting Strategy}
+Due to the severely truncated historical timeframe and the 9-month data blackout in 2025, cyclical models such as ARIMA or Prophet are not statistically reliable under the current data constraints. Deploying them would invite significant forecast risk. The primary business forecasting methodology deployed is Group-Share Proportional allocation.
+
+In parallel, Machine Learning tree-based models (LightGBM/CatBoost) are deployed as an Enhanced Baseline experiment to capture non-linear relationships. However, due to the unprecedented March 2026 Demand Shock, utilizing March as a validation set introduces substantial noise, causing the models to potentially overreact. Consequently, Group-Share remains the primary operational forecast, while ML results serve exclusively as volatility reference material.
+\FloatBarrier

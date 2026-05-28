@@ -1,0 +1,22 @@
+\begin{table}[H]
+\centering
+\small
+\caption{Top ML Features by Importance}
+\label{tab:feat_imp}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lll}
+\toprule
+\textbf{Feature} & \textbf{Avg Importance} & \textbf{Interpretation} \\
+\midrule
+qty\_roll\_mean\_4w & 92.7124 & Rolling weekly demand momentum \\
+qty\_lag\_2w & 72.8203 & Two-week lagged demand signal \\
+qty\_lag\_1 & 65.3358 & Immediate short-term demand momentum \\
+qty\_lag\_4w & 65.2720 & Four-week lagged demand signal \\
+line\_id\_clean & 56.1627 & Product hierarchy / category proxy \\
+\bottomrule
+\end{tabular}
+}
+\begin{flushleft}
+\footnotesize \textit{Note.} Feature importance is summarized for models with comparable importance outputs and is aggregated across monthly and weekly ML variants. It is directional and should not be interpreted causally.
+\end{flushleft}
+\end{table}

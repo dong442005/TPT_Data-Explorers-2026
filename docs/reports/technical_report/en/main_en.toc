@@ -1,0 +1,20 @@
+\contentsline {section}{Abstract}{1}{Doc-Start}%
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {section}{\numberline {2}System Architecture}{3}{section.2}%
+\contentsline {section}{\numberline {3}Database and ETL Pipeline}{4}{section.3}%
+\contentsline {section}{\numberline {4}Data Quality Audit}{4}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Data Limitations and Constraints}{5}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}UNKNOWN Hierarchy Impact}{5}{subsection.4.2}%
+\contentsline {section}{\numberline {5}Feature Engineering and Alignment}{6}{section.5}%
+\contentsline {section}{\numberline {6}Forecasting Strategy}{6}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Modeling Validation}{6}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Machine Learning Insights}{7}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Business Scenario Planning}{8}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Track 2: Color Analysis}{9}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Color Contribution and Inventory Implications}{9}{subsection.7.1}%
+\contentsline {section}{\numberline {8}Track 3: Dealer Ranking}{10}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Dealer Segment Value Analysis}{10}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Strategic Action Matrix}{12}{subsection.8.2}%
+\contentsline {section}{\numberline {9}Dashboard and Deliverables}{12}{section.9}%
+\contentsline {section}{\numberline {10}Pipeline Reproducibility}{12}{section.10}%
+\contentsline {section}{\numberline {11}Limitations and Future Work}{13}{section.11}%

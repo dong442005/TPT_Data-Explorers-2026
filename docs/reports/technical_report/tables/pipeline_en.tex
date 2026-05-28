@@ -1,0 +1,23 @@
+\begin{table}[H]
+\centering
+\small
+\caption{Pipeline Components and ETL Scripts}
+\label{tab:pipeline}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lll}
+\toprule
+\textbf{Component} & \textbf{Script Alias} & \textbf{Role} \\
+\midrule
+Database Init & create-tables.sql & Initializes PostgreSQL schema \\
+Historical Seed & import-data.sql & Ingests historical data \\
+ETL Parser & extract-validate.py & Automated PDF/Email parsing \\
+Data Patches & sql-patches.sql & Fixes geo and color errors \\
+Feature Store & build-features.py & Constructs Time-series \\
+Track 1 Model & core-baselines.py & Group-Share Forecast \\
+Track 2 Model & color-trends.py & Color trend allocation \\
+Track 3 Model & rfm-track3.py & RFM B2B ranking \\
+BI Dashboard & v-rfm-analysis.sql & Direct views for Power BI \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

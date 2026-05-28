@@ -1,0 +1,6 @@
+﻿group_code,group_name,description,created_at
+CITYBIKE_P,Xe phổ thông,"Xe đạp phổ thông dành cho người lớn: các dòng GN, New, 219, LD, Super...",2026-05-26 16:47:27.716285+07:00
+KIDBIKE_1,Xe trẻ em nhóm 1,"Xe trẻ em nhóm 1: bánh 20 inch trở xuống, các dòng GN 20, MTB 20, TE...",2026-05-26 16:47:27.716285+07:00
+KIDBIKE_2,Xe trẻ em nhóm 2,"Xe trẻ em nhóm 2: cỡ nhỏ hơn nhóm 1, bánh 12–16 inch, TE Bunny, Love...",2026-05-26 16:47:27.716285+07:00
+SPORTBIKE_S,Xe thể thao thép,"Xe thể thao khung thép: MTB 24-03, MTB 26-02, M 27-01...",2026-05-26 16:47:27.716285+07:00
+SPORTBIKE_A,Xe thể thao nhôm,"Xe thể thao khung nhôm: MTB SPD 27.5, GRX 2.0...",2026-05-26 16:47:27.716285+07:00

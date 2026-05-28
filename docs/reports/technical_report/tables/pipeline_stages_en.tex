@@ -1,0 +1,17 @@
+\begin{table}[htbp]
+\centering
+\caption{Pipeline Stages and Primary Scripts}
+\label{tab:pipeline_stages}
+\begin{tabular}{lll}
+\toprule
+\textbf{Stage} & \textbf{Description} & \textbf{Primary Scripts} \\
+\midrule
+Database Initialization & Schema creation and historical seed loading & 01\_create\_tables.sql, 02\_import\_data.sql \\
+Component A & Email and PDF invoice ingestion and extraction & extract\_validate.py, normalize.py \\
+Data Cleaning \& BI & Geographic and color patches, SQL Views & patches/*.sql, views/*.sql \\
+Feature Store & Monthly/weekly aggregations and lags & build\_phase2a\_features.py \\
+Track 1 Forecasting & ML Baselines and Group-Share proportional & phase3b\_core\_baselines.py, phase3c\_ml\_baseline.py \\
+Track 2 \& 3 Analytics & Color forecast and Dealer RFM Ranking & phase3f\_color\_forecast.py, phase3g\_track3\_dealer\_activity.py \\
+\bottomrule
+\end{tabular}
+\end{table}

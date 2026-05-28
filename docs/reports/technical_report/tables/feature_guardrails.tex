@@ -1,0 +1,15 @@
+\begin{table}[hbt!]
+\centering
+\caption{Feature Leakage Guardrails}
+\label{tab:feature_guardrails}
+\begin{tabular}{@{} l p{10cm} @{}}
+\toprule
+\textbf{Category} & \textbf{Features / Rules} \\
+\midrule
+Allowed Core Lags & \texttt{qty\_lag\_1}, \texttt{qty\_lag\_2}, \texttt{qty\_roll\_mean\_4w} \\
+Banned Features & Current period \texttt{total\_quantity}, \texttt{total\_revenue}, \texttt{n\_orders} \\
+Panelization & Zero-sales row injection ensures non-active SKUs are tracked \\
+Alignment & Target month variables shifted identically in training and future sets \\
+\bottomrule
+\end{tabular}
+\end{table}

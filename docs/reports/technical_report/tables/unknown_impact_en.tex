@@ -1,0 +1,17 @@
+\begin{table}[H]
+\centering
+\small
+\caption{Impact of UNKNOWN Hierarchy on Downstream Analytics}
+\label{tab:unknown}
+\resizebox{\linewidth}{!}{
+\begin{tabular}{ll}
+\toprule
+\textbf{Impact Area} & \textbf{Description} \\
+\midrule
+Group-Share Allocation & These 55 SKUs cannot be assigned to any product group, reducing group-share precision \\
+Color Trend Analysis & Missing hierarchy prevents proper color-category cross-tabulation \\
+Feature Engineering & line\_id\_clean and group\_code\_encoded default to UNKNOWN, weakening ML signal \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

@@ -1,0 +1,30 @@
+\subsection{Modeling Validation}
+During the Machine Learning evaluation phase, variants including LightGBM, XGBoost, and CatBoost were evaluated under a constrained temporal holdout / stress-validation setup, with March 2026 treated as the stress validation period. Table \ref{tab:model_comp} compares these models across the overall segment using WMAPE (Weighted Mean Absolute Percentage Error).
+
+\input{../tables/model_comparison_en.tex}
+
+\input{../tables/catboost_forecast_en.tex}
+
+CatBoost\_monthly\_minimal\_features achieved the lowest validation WMAPE among the evaluated ML variants; however, Group-Share remains the primary operational forecast.
+
+It is important to interpret these metrics with caution. While weekly models utilize a larger volume of data points, their WMAPE is often worse than monthly models because demand is highly volatile at the weekly grain, leading to higher variance in error margins. Furthermore, absolute metrics like MAE and RMSE are not directly comparable between weekly and monthly models due to the differing magnitudes of aggregated volumes.
+
+\subsection{Machine Learning Insights}
+Despite the aforementioned volatility, the Machine Learning experiments extracted valuable feature importance signals. Table \ref{tab:feat_imp} highlights the core features driving the ML algorithms.
+
+\input{../tables/feature_importance_en.tex}
+
+\subsection{Business Scenario Planning}
+Due to ML volatility caused by the March shock, Group-Share remains the primary operational forecast. Table \ref{tab:scenario} and Figure \ref{fig:scenario} summarize the Group-Share allocation scenarios for Q2 2026.
+
+\input{../tables/scenario_en.tex}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=0.85\textwidth]{../figures/en/scenario_forecast.pdf}
+\caption{Q2 2026 Group-Share Forecasted Quantity Scenarios}
+\label{fig:scenario}
+\end{figure}
+
+The Base scenario anchors standard material procurement planning. The Aggressive scenario serves as a strategic capacity buffer for supply chain resilience. Finally, the Conservative scenario assists executive management in controlling cash flow and inventory risks.
+\FloatBarrier
