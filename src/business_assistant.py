@@ -8,8 +8,8 @@ from langchain_community.utilities import SQLDatabase
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 # ===== CẤU HÌNH HỆ THỐNG VÀ BẢO MẬT =====
-DB_URL = os.getenv("TNBIKE_DB_URL", "postgresql://postgres:password@localhost:5432/tnbike_db")
-GOOGLE_API_KEY = "API_KEY_cua_ban"
+DB_URL = os.getenv("TNBIKE_DB_URL", "postgresql://postgres:442005@localhost:5432/tnbike_db")
+GOOGLE_API_KEY = "[ENCRYPTION_KEY]"
 MODELING_DIR = os.getenv("MODELING_DIR", "outputs/modeling")  # Thư mục chứa các file CSV kết quả ML
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s")

@@ -53,3 +53,7 @@ data/processed/
 
 # Outputs
 outputs/audit/runs/*.json
+
+# Auto-generated cache and media
+*.png
+tnbike_schema.json
