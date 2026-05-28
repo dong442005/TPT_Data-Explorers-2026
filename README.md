@@ -74,6 +74,9 @@ TPT_Data-Explorers-2026/
 │   ├── business_assistant.py           # Backend lõi của Chatbot AI
 │   ├── models/                         # [Cốt lõi] Mã nguồn Machine Learning & Feature Store
 │   ├── eda/                            # Các Script kiểm tra phân phối dữ liệu
+│   │   ├── eda_data_quality.py         # Kiểm định và bóc tách lỗi dữ liệu thô
+│   │   ├── eda_general.py              # Phân tích tổng quan chỉ số kinh doanh
+│   │   └── eda_rfm.py                  # Phân tích phân phối và chấm điểm RFM
 │   └── utils/                          # Các hàm tiện ích dùng chung
 │
 ├── outputs/                            # Kết quả sinh tự động từ ML Pipeline
