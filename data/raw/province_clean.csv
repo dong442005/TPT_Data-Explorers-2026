@@ -1,0 +1,77 @@
+﻿province_id,province_name_raw,region_raw,province_name_clean,region_clean,mapping_type,note,raw_created_at,clean_created_at
+5,Chí Linh,Miền Bắc,Hải Dương,Miền Bắc,district_to_province,Chí Linh thuộc Hải Dương,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+6,Cường Tráng - An Thịnh - Lương Tài - Bắc Ninh,Miền Bắc,Bắc Ninh,Miền Bắc,address_to_province,Chuỗi địa chỉ thuộc Bắc Ninh,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+7,Hoà Bình,Miền Bắc,Hòa Bình,Miền Bắc,normalize_text,Chuẩn hóa Hoà -> Hòa,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+10,Hà Nộ,Miền Bắc,Hà Nội,Miền Bắc,fix_typo,Hà Nộ -> Hà Nội,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+15,"Hưng Yên
+Hưng Yên",Miền Bắc,Hưng Yên,Miền Bắc,normalize_text,Lỗi lặp/xuống dòng,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+16,Hưng yên,Miền Bắc,Hưng Yên,Miền Bắc,normalize_text,Chuẩn hóa viết hoa,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+17,Hạ Long,Miền Bắc,Quảng Ninh,Miền Bắc,district_to_province,Hạ Long thuộc Quảng Ninh,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+18,Hải Dươn,Miền Bắc,Hải Dương,Miền Bắc,fix_typo,Hải Dươn -> Hải Dương,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+21,Hội An,Miền Bắc,Quảng Nam,Miền Trung,district_to_province,Hội An thuộc Quảng Nam,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+22,Khu 2- thị trấn Kim Tân- Thạch Thành - Thanh Hóa,Miền Bắc,Thanh Hóa,Miền Trung,address_to_province,Chuỗi địa chỉ thuộc Thanh Hóa,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+23,Khu 6 – TT Gia Lộc – Huyện Gia Lộc – Hải Dương,Miền Bắc,Hải Dương,Miền Bắc,address_to_province,Chuỗi địa chỉ thuộc Hải Dương,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+25,Lê Hoàn - Thị trấn Thọ Xuân - Huyện Thọ Xuân - Thanh Hoá,Miền Bắc,Thanh Hóa,Miền Trung,address_to_province,Chuỗi địa chỉ thuộc Thanh Hóa,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+28,Nghệ A,Miền Bắc,Nghệ An,Miền Trung,fix_typo,Nghệ A -> Nghệ An,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+31,Phan Thiết,Miền Bắc,Bình Thuận,Miền Trung,district_to_province,Phan Thiết thuộc Bình Thuận,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+32,Phú Quốc,Miền Bắc,Kiên Giang,Miền Nam,district_to_province,Phú Quốc thuộc Kiên Giang,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+34,Phố Kiểu - Yên Trường - Yên Định - Thanh Hoá,Miền Bắc,Thanh Hóa,Miền Trung,address_to_province,Chuỗi địa chỉ thuộc Thanh Hóa,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+35,Phủ Lý,Miền Bắc,Hà Nam,Miền Bắc,district_to_province,Phủ Lý thuộc Hà Nam,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+39,Quảng NinhSố,Miền Bắc,Quảng Ninh,Miền Bắc,fix_typo,Quảng NinhSố -> Quảng Ninh,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+42,Sầm Sơn,Miền Bắc,Thanh Hóa,Miền Trung,district_to_province,Sầm Sơn thuộc Thanh Hóa,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+43,TP Huế,Miền Bắc,Thừa Thiên Huế,Miền Trung,district_to_province,TP Huế thuộc Thừa Thiên Huế,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+44,TP Hưng Yên,Miền Bắc,Hưng Yên,Miền Bắc,district_to_province,TP Hưng Yên thuộc Hưng Yên,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+45,TP Hải Dương,Miền Bắc,Hải Dương,Miền Bắc,district_to_province,TP Hải Dương thuộc Hải Dương,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+46,TP Hải Phòng,Miền Bắc,Hải Phòng,Miền Bắc,normalize_text,TP Hải Phòng -> Hải Phòng,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+47,TP Đà Nẵng,Miền Bắc,Đà Nẵng,Miền Trung,normalize_text,TP Đà Nẵng -> Đà Nẵng,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+49,TT Hương Sơn- Phú Bình- Thái Nguyên,Miền Bắc,Thái Nguyên,Miền Bắc,address_to_province,Chuỗi địa chỉ thuộc Thái Nguyên,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+50,Tam Kỳ,Miền Bắc,Quảng Nam,Miền Trung,district_to_province,Tam Kỳ thuộc Quảng Nam,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+51,Thanh Hoá,Miền Trung,Thanh Hóa,Miền Trung,normalize_text,Thanh Hoá -> Thanh Hóa,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+55,Thân Nhân Trung - TT Bích Động - Việt Yên - Bắc Giang,Miền Bắc,Bắc Giang,Miền Bắc,address_to_province,Chuỗi địa chỉ thuộc Bắc Giang,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+56,Thủ Dầu Một,Miền Bắc,Bình Dương,Miền Nam,district_to_province,Thủ Dầu Một thuộc Bình Dương,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+60,Tĩnh Hà Tĩnh,Miền Bắc,Hà Tĩnh,Miền Trung,normalize_text,Tĩnh Hà Tĩnh -> Hà Tĩnh,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+61,Tĩnh Thanh Hoá,Miền Bắc,Thanh Hóa,Miền Trung,normalize_text,Tĩnh Thanh Hoá -> Thanh Hóa,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+62,Tỉnh Hòa Bình.,Miền Bắc,Hòa Bình,Miền Bắc,normalize_text,Tỉnh Hòa Bình. -> Hòa Bình,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+63,Tổ 1 - Phường Mường Thanh - TP Điện Biên Phủ,Miền Bắc,Điện Biên,Miền Bắc,address_to_province,TP Điện Biên Phủ thuộc Điện Biên,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+64,Uông Bí,Miền Bắc,Quảng Ninh,Miền Bắc,district_to_province,Uông Bí thuộc Quảng Ninh,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+65,Vinh,Miền Bắc,Nghệ An,Miền Trung,district_to_province,Vinh thuộc Nghệ An,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+67,Vĩnh Yên,Miền Bắc,Vĩnh Phúc,Miền Bắc,district_to_province,Vĩnh Yên thuộc Vĩnh Phúc,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+68,phố số 6 - Thị trấn Diêm Điền - Huyện Thái Thụy - Thái Bình.,Miền Bắc,Thái Bình,Miền Bắc,address_to_province,Chuỗi địa chỉ thuộc Thái Bình,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+71,Đường Nguyễn Trải - P Ba Đình TP Thanh Hoá,Miền Bắc,Thanh Hóa,Miền Trung,address_to_province,Chuỗi địa chỉ thuộc Thanh Hóa,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+72,Đường Trang Quan - Xã An Đồng - Huyện An Dương - Hải Phòng.,Miền Bắc,Hải Phòng,Miền Bắc,address_to_province,Chuỗi địa chỉ thuộc Hải Phòng,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+74,Đồng Hới,Miền Bắc,Quảng Bình,Miền Trung,district_to_province,Đồng Hới thuộc Quảng Bình,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+20,Hải Phòng,Miền Bắc,Hải Phòng,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+26,Lạng Sơn,Miền Bắc,Lạng Sơn,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+27,Nam Định,Miền Bắc,Nam Định,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+11,Hà Nội,Miền Bắc,Hà Nội,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+66,Vĩnh Phúc,Miền Bắc,Vĩnh Phúc,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+33,Phú Thọ,Miền Bắc,Phú Thọ,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+57,Thừa Thiên Huế,Miền Trung,Thừa Thiên Huế,Miền Trung,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+12,Hà Tĩnh,Miền Trung,Hà Tĩnh,Miền Trung,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+2,Bắc Kạn,Miền Bắc,Bắc Kạn,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+73,Đắk Lắk,Miền Trung,Đắk Lắk,Miền Trung,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+40,Quảng Trị,Miền Trung,Quảng Trị,Miền Trung,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+13,Hòa Bình,Miền Bắc,Hòa Bình,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+19,Hải Dương,Miền Bắc,Hải Dương,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+52,Thanh Hóa,Miền Trung,Thanh Hóa,Miền Trung,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+37,Quảng Ngãi,Miền Trung,Quảng Ngãi,Miền Trung,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+24,Lào Cai,Miền Bắc,Lào Cai,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+38,Quảng Ninh,Miền Bắc,Quảng Ninh,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+8,Hà Giang,Miền Bắc,Hà Giang,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+48,TP. Hồ Chí Minh,Miền Nam,TP. Hồ Chí Minh,Miền Nam,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+30,Ninh Bình,Miền Bắc,Ninh Bình,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+69,Điện Biên,Miền Bắc,Điện Biên,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+59,Tây Bình Cách - Xã Đông Xá - Huyện Đông Hưng - Thái Bình.,Miền Bắc,Tây Bình Cách - Xã Đông Xá - Huyện Đông Hưng - Thái Bình.,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+29,Nghệ An,Miền Trung,Nghệ An,Miền Trung,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+41,Sơn La,Miền Bắc,Sơn La,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+54,Thái Nguyên,Miền Bắc,Thái Nguyên,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+36,Quảng Nam,Miền Trung,Quảng Nam,Miền Trung,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+4,Cao Bằng,Miền Bắc,Cao Bằng,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+53,Thái Bình,Miền Bắc,Thái Bình,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+58,Tuyên Quang,Miền Bắc,Tuyên Quang,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+1,Bắc Giang,Miền Bắc,Bắc Giang,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+70,Đà Nẵng,Miền Trung,Đà Nẵng,Miền Trung,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+75,Đồng Nai,Miền Nam,Đồng Nai,Miền Nam,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+3,Bắc Ninh,Miền Bắc,Bắc Ninh,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+14,Hưng Yên,Miền Bắc,Hưng Yên,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
+9,Hà Nam,Miền Bắc,Hà Nam,Miền Bắc,keep,,2026-05-26 16:47:27.716285+07:00,2026-05-26 17:54:36.025427+07:00
