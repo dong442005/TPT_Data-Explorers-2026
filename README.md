@@ -203,34 +203,3 @@ python src/models/forecasting/run_end_to_end.py --allow-modeling --allow-overwri
 streamlit run app.py
 ```
 *(Browser will open automatically at `http://localhost:8501`)*
-
----
-
-## 8. Development Workflow
-
-> [!IMPORTANT]
-> **Workspace Organization:** Responsibilities are strictly divided: EDA in `notebooks/`, Data patches in `database/patches/`, BI logic in `bi/dax/`, and academic documentation in `docs/`.
-
-To ensure codebase consistency and quality, the team strictly adhered to software engineering standards:
-- **Branching Strategy:** The `main` branch is always kept Production-ready. Features are developed on separate branches (e.g., `feature/pipeline-integration`) and merged via Pull Requests after review.
-- **Conventional Commits:**
-  - `feat:`: New features
-  - `fix:`: Bug fixes
-  - `docs:`: Documentation updates
-  - `chore:`: Configs, cleanup
-  - `sql:`: Database schema changes
-
----
-
-## 9. References & Documentation Outputs
-
-All results and scientific proofs are transparently documented:
-- 📝 **Project Summary Report:** [`TNBike_Data_Explorers_Report.md`](TNBike_Data_Explorers_Report.md) (Content preparation)
-- 📄 **Official Technical Report:** [`docs/reports/technical_report_en.pdf`](docs/reports/technical_report/technical_report_en.pdf) (Design methodology, leakage prevention, results)
-- 📊 **Forecasting Outputs:** `outputs/modeling/` (RFM scores, color allocation, SKU forecasts)
-- 📈 **Data Audit Reports:** `outputs/audit/`
-- 📑 **Power BI Guide:** [`docs/dashboard_powerbi_guide.md`](docs/dashboard_powerbi_guide.md)
-- ⚙️ **Data Processing Methodology:** [`docs/data_processing_methodology.md`](docs/data_processing_methodology.md)
-- 🧠 **B2B RFM Analysis:** [`docs/rfm_scoring_analysis.md`](docs/rfm_scoring_analysis.md)
-- 🗺️ **SKU Mapping Analysis:** [`docs/product_line_mapping_analysis.md`](docs/product_line_mapping_analysis.md)
-- 📐 **Data Lineage Architecture:** [`REPO_ARCHITECTURE.md`](REPO_ARCHITECTURE.md)
