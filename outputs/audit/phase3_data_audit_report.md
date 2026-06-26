@@ -8,7 +8,7 @@
 - raw_product_price.csv: Loaded
 
 ## 2. Data Periods & Gap Validation
-- Found Train Periods (period_month): [1, 2, 3, 13, 14, 15]
+- Found Train Periods (period_month): [np.int64(1), np.int64(2), np.int64(3), np.int64(13), np.int64(14), np.int64(15)]
 - ✅ **PASS**: Periods are exactly Jan25-Mar25 and Jan26-Mar26.
 - ✅ **PASS**: Gap Apr25-Dec25 is correctly preserved (not imputed).
 
