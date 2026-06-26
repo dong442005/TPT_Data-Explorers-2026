@@ -149,28 +149,88 @@ The system includes a **6-page interactive dashboard** connected via DirectQuery
 
 ## 7. Getting Started
 
-### Prerequisites
+Follow these steps to replicate the project's results from scratch.
+
+### Step 1: Environment & Database Setup
 ```bash
 pip install -r requirements.txt
 ```
+Create a local PostgreSQL database named `tnbike_db`.
 
-### Setup Database
+### Step 2: Seed Base Data & Configuration
 Execute the following in DBeaver/pgAdmin:
-1. `database/01_create_tables.sql`
-2. `database/02_import_data.sql`
+1. `database/01_create_tables.sql` (Schema Creation)
+2. `database/02_import_data.sql` (Historical Data Seed)
 
 Create a `.env` file for DB credentials and `GEMINI_API_KEY`:
 ```bash
 cp .env.example .env
 ```
+> [!IMPORTANT]
+> **Action Required:** Open the newly created `.env` file and manually fill in your local PostgreSQL username/password and your Google Gemini API key. The pipeline and chatbot will fail without these credentials.
 
-### Run Full ML Pipeline
+### Step 3: Run ETL Pipeline
+Place the `.eml` invoices in `data/raw/emails/`. Run the following sequentially:
 ```bash
+python src/extract_validate.py     # 1. [E] Extract from PDF/Email
+python src/normalize.py            # 2. [T] Transform (Regex normalization)
+python src/load_to_database.py     # 3. [L] Load cleansed data to PostgreSQL
+```
+
+### Step 4: Execute SQL Patches for Data Cleansing
+Execute the following in DBeaver/pgAdmin sequentially:
+1. `database/patches/db_data_quality_patch.sql` (Fixes fonts, colors)
+2. `database/patches/geo_clean_patch_final.sql` (Cleanses geography, creates `province_clean`)
+
+> [!IMPORTANT]
+> You must run `geo_clean_patch_final.sql` **after** `db_data_quality_patch.sql`. This file creates the `province_clean` table required by BI Views.
+
+### Step 5: Create Power BI Views & Connect
+- Run `database/views/powerbi_views.sql` in DBeaver/pgAdmin.
+- Open the official dashboard at `bi/dax/TPT_Dashboard_28_5_final.pbix`, set Host to `localhost`, Database to `tnbike_db`, and click **Refresh**.
+
+### Step 6: Run Machine Learning Pipeline (End-to-End)
+```bash
+# Dry-run test to verify structure
+python src/models/forecasting/run_end_to_end.py --dry-run
+
+# Run the full ML pipeline (training and forecasting)
 python src/models/forecasting/run_end_to_end.py --allow-modeling --allow-overwrite
 ```
 
-### Launch AI Chatbot
+### Step 7: Launch AI Chatbot
 ```bash
 streamlit run app.py
 ```
-*(Opens locally at `http://localhost:8501`)*
+*(Browser will open automatically at `http://localhost:8501`)*
+
+---
+
+## 8. Development Workflow
+
+> [!IMPORTANT]
+> **Workspace Organization:** Responsibilities are strictly divided: EDA in `notebooks/`, Data patches in `database/patches/`, BI logic in `bi/dax/`, and academic documentation in `docs/`.
+
+To ensure codebase consistency and quality, the team strictly adhered to software engineering standards:
+- **Branching Strategy:** The `main` branch is always kept Production-ready. Features are developed on separate branches (e.g., `feature/pipeline-integration`) and merged via Pull Requests after review.
+- **Conventional Commits:**
+  - `feat:`: New features
+  - `fix:`: Bug fixes
+  - `docs:`: Documentation updates
+  - `chore:`: Configs, cleanup
+  - `sql:`: Database schema changes
+
+---
+
+## 9. References & Documentation Outputs
+
+All results and scientific proofs are transparently documented:
+- 📝 **Project Summary Report:** [`TNBike_Data_Explorers_Report.md`](TNBike_Data_Explorers_Report.md) (Content preparation)
+- 📄 **Official Technical Report:** [`docs/reports/technical_report_en.pdf`](docs/reports/technical_report/technical_report_en.pdf) (Design methodology, leakage prevention, results)
+- 📊 **Forecasting Outputs:** `outputs/modeling/` (RFM scores, color allocation, SKU forecasts)
+- 📈 **Data Audit Reports:** `outputs/audit/`
+- 📑 **Power BI Guide:** [`docs/dashboard_powerbi_guide.md`](docs/dashboard_powerbi_guide.md)
+- ⚙️ **Data Processing Methodology:** [`docs/data_processing_methodology.md`](docs/data_processing_methodology.md)
+- 🧠 **B2B RFM Analysis:** [`docs/rfm_scoring_analysis.md`](docs/rfm_scoring_analysis.md)
+- 🗺️ **SKU Mapping Analysis:** [`docs/product_line_mapping_analysis.md`](docs/product_line_mapping_analysis.md)
+- 📐 **Data Lineage Architecture:** [`REPO_ARCHITECTURE.md`](REPO_ARCHITECTURE.md)
